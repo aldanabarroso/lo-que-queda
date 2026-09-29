@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lo que queda — pozos del Golfo San Jorge</title>
+  <!-- %TOTAL_POZOS% lo reemplaza vite.config.js con la cifra de public/data/resumen.json (regla 1: ninguna cifra a mano) -->
+  <meta name="description" content="Lo que queda cuando el petróleo se va: %TOTAL_POZOS% pozos de la Cuenca del Golfo San Jorge, y una ciudad que creció encima. Datos abiertos de la Secretaría de Energía y del Censo 2022.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body class="sin-leyenda">
+  <a class="saltar" href="#paso-final">Saltar el recorrido e ir a explorar el mapa</a>
+
+  <!-- Mapa fijo detrás de todo -->
+  <div id="map" role="region" aria-label="Mapa de pozos de hidrocarburos"></div>
+
+  <!-- Recorrido guiado: una tarjeta por paso. Los textos viven en src/story.js -->
+  <main id="story" aria-label="Recorrido guiado">
+    <section class="step" data-step="0"><div class="card card-portada">
+      <figure class="foto-portada">
+        <img src="./img/comodoro-hoy.jpg" alt="Un aparato de bombeo petrolero cercado, en una ladera sobre Comodoro Rivadavia; atrás, la ciudad y el mar">
+        <figcaption>Comodoro Rivadavia hoy. Foto: gentileza El Patagónico.</figcaption>
+      </figure>
+      <p class="kicker">Exploración interactiva</p>
+      <h1 class="titulo">Lo que queda</h1>
+      <p class="bajada">cuando el petróleo se va</p>
+      <p class="descripcion" id="portada-texto"></p>
+      <button type="button" class="empezar" id="btn-empezar">
+        Desplazá para empezar
+        <svg class="empezar-flecha" width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1 L7 14 M1.5 8.5 L7 14 L12.5 8.5"/></svg>
+      </button>
+      <p class="fuente" id="portada-fuente"></p>
+    </div></section>
+    <!-- Los pasos 1..8 se generan desde src/story.js -->
+  </main>
+
+  <!-- Panel de exploración: aparece al terminar el recorrido. En celular es una hoja inferior plegable. -->
+  <aside id="explore" class="hidden plegado" aria-labelledby="explore-titulo">
+    <div class="explore-head">
+      <div>
+        <h2 id="explore-titulo">Explorá los <span id="n-total"></span> pozos</h2>
+        <p class="muted" aria-live="polite">Mostrando <strong id="n-visible"></strong></p>
+      </div>
+      <button type="button" id="btn-plegar" class="link-btn btn-plegar" aria-expanded="false" aria-controls="explore-cuerpo">Filtros</button>
+    </div>
+    <div class="explore-cuerpo" id="explore-cuerpo">
+      <fieldset id="f-estado" class="filtro">
+        <legend>Estado declarado</legend>
+        <!-- se llena desde explore.js con los estados y sus conteos -->
+      </fieldset>
+      <details class="ayuda">
+        <summary>¿Qué quiere decir “abandonado”?</summary>
+        <p>Que la operadora dio de baja el pozo según la Resolución SE 5/96. Es el estado que declara ante la
+          Secretaría de Energía: no describe el estado físico del pozo.</p>
+      </details>
+      <div class="filtro">
+        <label for="f-empresa">Operadora</label>
+        <select id="f-empresa"><option value="">Todas</option></select>
+      </div>
+      <div class="filtro">
+        <label for="f-yacimiento">Yacimiento</label>
+        <select id="f-yacimiento"><option value="">Todos</option></select>
+      </div>
+      <div class="filtro">
+        <label for="f-provincia">Provincia</label>
+        <select id="f-provincia">
+          <option value="">Ambas</option>
+          <option value="1">Chubut</option>
+          <option value="2">Santa Cruz</option>
+        </select>
+      </div>
+      <div class="bloque-tiempo">
+        <fieldset id="f-tiempo" class="filtro">
+          <legend>Última producción</legend>
+          <p class="nota" id="f-tiempo-nota"></p>
+          <!-- tramos desde explore.js -->
+        </fieldset>
+        <div class="filtro">
+          <p class="filtro-subtitulo">Pozos declarados abandonados por año</p>
+          <div id="grafico-abandonos"></div>
+        </div>
+      </div>
+      <div class="filtro filtro-inline">
+        <input type="checkbox" id="f-poblacion">
+        <label for="f-poblacion">Ver población por radio censal (Comodoro)</label>
+      </div>
+      <div id="ley-poblacion" class="hidden"></div>
+      <div class="filtro filtro-inline">
+        <input type="checkbox" id="f-barrios">
+        <label for="f-barrios">Ver barrios de Comodoro</label>
+      </div>
+      <div class="filtro filtro-inline">
+        <input type="checkbox" id="f-concesiones">
+        <label for="f-concesiones">Ver concesiones de explotación</label>
+      </div>
+      <form id="form-buscar" class="filtro" role="search">
+        <label for="f-buscar">Buscar por sigla</label>
+        <div class="buscar-fila">
+          <input type="search" id="f-buscar" placeholder="Ej.: CH-679" autocomplete="off">
+          <button type="submit" class="link-btn">Buscar</button>
+        </div>
+      </form>
+      <button id="btn-recorrido" type="button" class="link-btn">Volver al recorrido ↑</button>
+      <p class="fuente">Fuentes: Secretaría de Energía (Capítulo IV – Pozos, producción mensual por pozo y concesiones de
+        explotación; CC-BY 4.0); Municipalidad de Comodoro Rivadavia (límites, radios censales y barrios); INDEC, Censo 2022.
+        Mapa base: OpenFreeMap, © colaboradores de OpenStreetMap. <a href="#metodologia">Metodología y fuentes</a></p>
+    </div>
+  </aside>
+
+  <!-- Ficha de pozo al hacer clic o buscar -->
+  <div id="ficha" class="hidden" role="dialog" aria-labelledby="ficha-titulo"></div>
+
+  <!-- Leyenda compacta: conteos del filtro vigente -->
+  <aside id="leyenda" aria-label="Leyenda del mapa"></aside>
+
+  <!-- Metodología y fuentes: la arma src/metodologia.js con las cifras de resumen.json -->
+  <section id="metodologia" class="metodologia" aria-label="Metodología y fuentes"></section>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

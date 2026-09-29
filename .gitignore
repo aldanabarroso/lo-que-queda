@@ -1,0 +1,11 @@
+node_modules/
+dist/
+data-pipeline/_tmp_*/
+__pycache__/
+.DS_Store
+Thumbs.db
+desktop.ini
+# Los archivos de data-pipeline/raw/ SÍ van al repo: son la garantía de reproducibilidad. Todos pesan menos de
+# 50 MB (a partir de ahí GitHub advierte; el tope duro es 100 MB); los más grandes son capitulo-iv-pozos.csv
+# (~34 MB) y produccion-mensual_gsj.zip (~43 MB). El Capítulo IV completo (200 MB) no; ver data-pipeline/README.md.
+# data-pipeline/_tmp_*/ quedó de versiones viejas de procesar.py; ahora descomprime en una carpeta temporal del sistema.

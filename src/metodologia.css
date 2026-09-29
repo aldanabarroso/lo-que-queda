@@ -1,0 +1,84 @@
+/* Página "Metodología y fuentes" (tarea 3.2). Todo queda bajo #metodologia y usa las variables de
+   src/styles.css (--texto, --texto-sec, --borde, --tarjeta, --serif, --sans). Sin colores nuevos: los
+   puntos de estado toman el color de src/paleta.js. Los enlaces van en el color del texto, subrayados
+   (el azul es "Activo" en esta pieza). */
+
+#metodologia .met-hoja {
+  max-width: 720px;
+  padding: 36px 40px 32px;
+  background: var(--tarjeta);
+  border-radius: 6px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .14);
+  color: var(--texto);
+  font-family: var(--sans);
+  font-size: 16.5px;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+#metodologia h2 { margin: 0 0 14px; font-family: var(--serif); font-weight: 600; font-size: 32px; line-height: 1.15; }
+#metodologia h3 {
+  margin: 40px 0 12px; padding-top: 24px; border-top: 1px solid var(--borde);
+  font-family: var(--serif); font-weight: 600; font-size: 23px; line-height: 1.25;
+  scroll-margin-top: 16px;
+}
+#metodologia h4 {
+  margin: 24px 0 6px; font-size: 13px; font-weight: 600; line-height: 1.4;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--texto-sec);
+}
+#metodologia p { margin: 0 0 12px; }
+#metodologia ul { margin: 0 0 14px; padding-left: 1.2em; }
+#metodologia li { margin: 0 0 8px; }
+#metodologia .met-apertura { font-size: 18px; line-height: 1.55; }
+
+#metodologia a { color: var(--texto); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+#metodologia a:hover { text-decoration-thickness: 2px; }
+#metodologia a:focus-visible,
+#metodologia .met-tabla-envoltura:focus-visible { outline: 3px solid var(--texto); outline-offset: 2px; border-radius: 2px; }
+#metodologia code { font-size: .9em; padding: 0 .25em; background: rgba(0, 0, 0, .05); border-radius: 3px; overflow-wrap: anywhere; }
+
+/* índice */
+#metodologia .met-indice { margin: 18px 0 0; font-size: 15px; }
+#metodologia .met-indice ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+#metodologia .met-indice li { margin: 0; }
+#metodologia .met-indice a { display: inline-block; padding: 4px 0; }
+
+/* tabla de equivalencias: si no entra, se desplaza dentro de su envoltura, nunca la página */
+#metodologia .met-tabla-titulo { margin: 16px 0 8px; font-size: 14px; line-height: 1.4; color: var(--texto-sec); }
+#metodologia .met-tabla-aviso { display: none; margin: 0 0 6px; font-size: 13px; color: var(--texto-sec); }
+#metodologia .met-tabla-envoltura { margin: 0 0 18px; max-width: 100%; overflow-x: auto; }
+/* el caption queda para lectores de pantalla; el título visible es .met-tabla-titulo */
+#metodologia .met-oculto {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+#metodologia table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 15px; line-height: 1.4; }
+#metodologia th, #metodologia td { padding: 8px 10px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--borde); }
+#metodologia thead th {
+  font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--texto-sec); border-bottom: 2px solid var(--borde); vertical-align: bottom;
+}
+#metodologia tbody th { font-weight: 600; white-space: nowrap; }
+#metodologia th.met-num, #metodologia td.met-num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+#metodologia tfoot th, #metodologia tfoot td { font-weight: 600; border-bottom: 0; }
+#metodologia .met-estados { list-style: none; margin: 0; padding: 0; }
+#metodologia .met-estados li { margin: 0 0 2px; }
+#metodologia .met-punto { display: inline-block; width: 11px; height: 11px; margin-right: 8px; border-radius: 50%; }
+
+/* declaración de IA */
+#metodologia .met-ia { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 12px; }
+#metodologia .met-ia dt { font-weight: 600; }
+#metodologia .met-ia dd { margin: 0; }
+
+@media (max-width: 700px) {
+  #metodologia .met-hoja { padding: 22px 18px 20px; font-size: 16px; }
+  #metodologia h2 { font-size: 26px; }
+  #metodologia h3 { margin-top: 32px; padding-top: 20px; font-size: 20px; }
+  #metodologia .met-apertura { font-size: 17px; }
+  #metodologia .met-ia { grid-template-columns: 1fr; gap: 0; }
+  #metodologia .met-ia dd { margin-bottom: 8px; }
+}
+/* la tabla (520 px como mínimo) deja de entrar en la tarjeta por debajo de ~590 px de ancho */
+@media (max-width: 590px) {
+  #metodologia .met-tabla-aviso { display: block; }
+}
