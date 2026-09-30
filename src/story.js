@@ -226,10 +226,9 @@ export function irA(id) {
   el.focus({ preventScroll: true });
 }
 
-/** Inserta las tarjetas en #story (antes de la sección del visualizador) y conecta scrollama con el mapa.
- *  La sección #explorar (en index.html) es un paso más del scroll, sin tarjeta: al entrar se abre el
- *  visualizador (alEntrarExplorar) y al volver a cualquier paso del relato se cierra (alSalirExplorar). */
-export function montarRecorrido({ pasos, mapa, produccion, alEntrarExplorar, alSalirExplorar }) {
+/** Inserta las tarjetas en #story, antes de la sección del visualizador. No necesita el mapa: se llama apenas
+ *  llega resumen.json, así el relato se puede leer mientras bajan MapLibre y deck.gl. */
+export function crearTarjetas({ pasos, produccion }) {
   const cont = document.getElementById('story');
   const seccionExplorar = document.getElementById('explorar');
   for (const s of pasos) {
@@ -251,14 +250,19 @@ export function montarRecorrido({ pasos, mapa, produccion, alEntrarExplorar, alS
   }
   if (produccion) dibujarProduccion(document.getElementById('grafico-cuencas'), produccion);
   cont.querySelectorAll('.boton-paso').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); irA(a.dataset.destino); }));
+}
 
+/** Conecta scrollama con el mapa (cuando el mapa ya existe). Al conectarse aplica el paso en pantalla.
+ *  La sección #explorar (en index.html) es un paso más del scroll, sin tarjeta: al entrar se abre el
+ *  visualizador (alEntrarExplorar) y al volver a cualquier paso del relato se cierra (alSalirExplorar). */
+export function conectarRecorrido({ pasos, mapa, alEntrarExplorar, alSalirExplorar }) {
+  const seccionExplorar = document.getElementById('explorar');
   let explorando = false;
   const scroller = scrollama();
   scroller
     .setup({ step: '#story .step', offset: 0.55, progress: false })
     .onStepEnter(({ element }) => {
       document.querySelectorAll('#story .step').forEach((el) => el.classList.toggle('activa', el === element));
-      document.body.classList.toggle('en-portada', element.dataset.step === '0');
       if (element === seccionExplorar) {
         // Visualizador. Si ya estaba abierto (volvió de la metodología, o scrollama re-dispara al cambiar el alto
         // de la ventana) no se toca nada: el mapa conserva los filtros y la vista que eligió el usuario.

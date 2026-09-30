@@ -1,22 +1,28 @@
 // Arranque en dos cargas, para que la pieza aparezca rápido:
-//  1. Lo liviano: textos (resumen.json), gráfico, metodología, el mapa base (MapLibre + deck.gl, que se
-//     piden apenas arranca) y los pozos del país del paso 2. Con eso se ven la portada y los primeros pasos.
-//  2. En segundo plano, mientras se lee la portada: los 44.390 pozos de la cuenca, radios censales,
-//     límites, concesiones y barrios. Recién ahí se arma el panel del visualizador. Si alguien baja más
-//     rápido de lo que tarda en llegar, un aviso dice "Cargando los pozos…".
+//  1. Lo liviano: textos (resumen.json), tarjetas, gráfico y metodología, que se ven apenas llegan; en
+//     paralelo, el mapa base (MapLibre + deck.gl por import(), los archivos más pesados del código).
+//  2. Con el mapa ya en pantalla, en segundo plano: los pozos del país (paso 2) y los 44.390 pozos de la
+//     cuenca, radios censales, límites, concesiones y barrios. Recién ahí se arma el panel del visualizador.
+//     Si alguien baja más rápido de lo que tarda en llegar, un aviso dice "Cargando los pozos…".
 
 import {
   cargarResumen, cargarProduccion, cargarPais,
   cargarPozos, cargarRadios, cargarLimites, cargarConcesiones, cargarBarrios,
 } from './data.js';
-import { definirPasos, montarRecorrido, textoPortada, irA } from './story.js';
+import { definirPasos, crearTarjetas, conectarRecorrido, textoPortada, irA } from './story.js';
 import { montarLeyenda, montarExploracion } from './explore.js';
 import { montarMetodologia } from './metodologia.js';
 
+// "Está en la portada": el aviso de carga no aparece ahí (la portada no necesita pozos).
+function vigilarPortada() {
+  const portada = document.querySelector('#story .step[data-step="0"]');
+  new IntersectionObserver(([e]) => document.body.classList.toggle('en-portada', e.isIntersecting),
+    { rootMargin: '0px 0px -45% 0px' }).observe(portada);
+}
+
 async function iniciar() {
   // ---- primera carga ----
-  const libreriaMapa = import('./map.js'); // los archivos más pesados del código: se piden ya, en paralelo
-  const pais = cargarPais().catch((err) => { console.warn('Sin la capa país:', err); return null; }); // no es imprescindible
+  const libreriaMapa = import('./map.js'); // se pide ya: es lo que más tarda en bajar
   const [resumen, produccion] = await Promise.all([cargarResumen(), cargarProduccion()]);
 
   const portada = textoPortada(resumen);
@@ -27,24 +33,27 @@ async function iniciar() {
     const suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelector('#story .step[data-step="1"]')?.scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'center' });
   });
+  const pasos = definirPasos(resumen);
+  crearTarjetas({ pasos, produccion });
   montarMetodologia(document.getElementById('metodologia'), resumen);
+  vigilarPortada();
+  document.body.classList.add('cargando-pozos');
 
   const { crearMapa } = await libreriaMapa;
   let exploracion = null;
   let quiereExplorar = false; // entró al visualizador antes de que llegaran los pozos
   const mapa = crearMapa({ onClickPozo: (idpozo) => exploracion?.alClickPozo(idpozo) });
   montarLeyenda({ mapa });
-  montarRecorrido({
-    pasos: definirPasos(resumen), mapa, produccion,
+  conectarRecorrido({
+    pasos, mapa,
     alEntrarExplorar: () => { quiereExplorar = true; exploracion?.mostrarPanel(); },
     alSalirExplorar: () => { quiereExplorar = false; exploracion?.ocultarPanel(); },
   });
-  const datosPais = await pais;
-  if (datosPais) mapa.cargarDatos({ pais: datosPais });
 
   // ---- segunda carga ----
+  // La capa país no es imprescindible: si falla, el paso 2 queda sin puntos pero la pieza sigue.
+  cargarPais().then((pais) => mapa.cargarDatos({ pais })).catch((err) => console.warn('Sin la capa país:', err));
   const aviso = document.getElementById('cargando');
-  document.body.classList.add('cargando-pozos');
   try {
     const [pozos, radios, limites, concesiones, barrios] = await Promise.all([
       cargarPozos(), cargarRadios(), cargarLimites(), cargarConcesiones(), cargarBarrios(),
