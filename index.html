@@ -10,8 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./src/styles.css">
 </head>
-<body class="sin-leyenda">
-  <a class="saltar" href="#paso-final">Saltar el recorrido e ir a explorar el mapa</a>
+<body class="sin-leyenda en-portada">
+  <a class="saltar" href="#explorar">Saltar el recorrido e ir a explorar el mapa</a>
 
   <!-- Mapa fijo detrás de todo -->
   <div id="map" role="region" aria-label="Mapa de pozos de hidrocarburos"></div>
@@ -33,8 +33,15 @@
       </button>
       <p class="fuente" id="portada-fuente"></p>
     </div></section>
-    <!-- Los pasos 1..8 se generan desde src/story.js -->
+    <!-- Los pasos 1..8 se generan desde src/story.js y se insertan acá, antes del visualizador -->
+    <!-- Visualizador: un paso más del scroll, sin tarjeta. Al entrar se libera el mapa y aparece el panel. -->
+    <section class="step step-explorar" id="explorar" data-step="explorar" tabindex="-1" aria-labelledby="explorar-titulo">
+      <h2 id="explorar-titulo" class="sr-only">Explorá el mapa</h2>
+    </section>
   </main>
+
+  <!-- Aviso de la segunda carga (los pozos de la cuenca llegan después de la portada) -->
+  <div id="cargando" role="status" aria-live="polite">Cargando los pozos…</div>
 
   <!-- Panel de exploración: aparece al terminar el recorrido. En celular es una hoja inferior plegable. -->
   <aside id="explore" class="hidden plegado" aria-labelledby="explore-titulo">

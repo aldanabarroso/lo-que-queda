@@ -208,19 +208,34 @@ export function definirPasos(R) {
       fuente: [F.capIV, F.ypf20f],
       vista: { center: [-68.3, -46.2], zoom: 7 },
       capas: { ...base, limites: true },
-      final: true,
+      boton: { texto: 'Explorá el mapa', destino: 'explorar' }, // lleva a la sección del visualizador
     },
   ];
 }
 
-/** Inserta las tarjetas en #story y conecta scrollama con el mapa. */
-export function montarRecorrido({ pasos, mapa, produccion, alTerminar, alSalirDelFinal }) {
+// Vista con la que arranca el visualizador (la cuenca entera, como el paso 8).
+const VISTA_EXPLORAR = { center: [-68.3, -46.2], zoom: 7 };
+const FLECHA = '<svg class="empezar-flecha" width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1 L7 14 M1.5 8.5 L7 14 L12.5 8.5"/></svg>';
+
+/** Lleva a una sección (con desplazamiento suave, salvo "reducir movimiento") y le pasa el foco. */
+export function irA(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'start' });
+  el.focus({ preventScroll: true });
+}
+
+/** Inserta las tarjetas en #story (antes de la sección del visualizador) y conecta scrollama con el mapa.
+ *  La sección #explorar (en index.html) es un paso más del scroll, sin tarjeta: al entrar se abre el
+ *  visualizador (alEntrarExplorar) y al volver a cualquier paso del relato se cierra (alSalirExplorar). */
+export function montarRecorrido({ pasos, mapa, produccion, alEntrarExplorar, alSalirExplorar }) {
   const cont = document.getElementById('story');
+  const seccionExplorar = document.getElementById('explorar');
   for (const s of pasos) {
     const sec = document.createElement('section');
-    sec.className = `step${s.final ? ' step-final' : ''}`;
+    sec.className = 'step';
     sec.dataset.step = s.id;
-    if (s.final) { sec.id = 'paso-final'; sec.tabIndex = -1; } // destino del enlace "Saltar el recorrido"
     sec.setAttribute('aria-labelledby', `titulo-paso-${s.id}`);
     sec.innerHTML = `
       <div class="card${s.foto ? ' card-foto' : ''}">
@@ -229,24 +244,33 @@ export function montarRecorrido({ pasos, mapa, produccion, alTerminar, alSalirDe
         <h2 class="titulo-paso" id="titulo-paso-${s.id}"><span class="cifra">${s.cifra}</span> ${s.titulo}</h2>
         <p class="texto">${s.texto}</p>
         ${s.grafico ? '<div class="grafico" id="grafico-cuencas"></div>' : ''}
+        ${s.boton ? `<a class="empezar boton-paso" href="#${s.boton.destino}" data-destino="${s.boton.destino}">${s.boton.texto} ${FLECHA}</a>` : ''}
         <p class="fuente">Fuente: ${htmlFuente(s.fuente)}</p>
       </div>`;
-    cont.appendChild(sec);
+    cont.insertBefore(sec, seccionExplorar);
   }
   if (produccion) dibujarProduccion(document.getElementById('grafico-cuencas'), produccion);
+  cont.querySelectorAll('.boton-paso').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); irA(a.dataset.destino); }));
 
-  let enFinal = false;
+  let explorando = false;
   const scroller = scrollama();
   scroller
     .setup({ step: '#story .step', offset: 0.55, progress: false })
     .onStepEnter(({ element }) => {
-      const id = Number(element.dataset.step);
       document.querySelectorAll('#story .step').forEach((el) => el.classList.toggle('activa', el === element));
-      const paso = pasos.find((p) => p.id === id);
-      // Ya en el final (volvió de la metodología, o scrollama re-dispara al cambiar el alto de la ventana):
-      // no se toca nada, así el mapa conserva los filtros del panel.
-      if (paso?.final && enFinal) return;
-      if (enFinal && !paso?.final) { enFinal = false; alSalirDelFinal?.(); } // volvió hacia arriba: se cierra el panel
+      document.body.classList.toggle('en-portada', element.dataset.step === '0');
+      if (element === seccionExplorar) {
+        // Visualizador. Si ya estaba abierto (volvió de la metodología, o scrollama re-dispara al cambiar el alto
+        // de la ventana) no se toca nada: el mapa conserva los filtros y la vista que eligió el usuario.
+        if (explorando) return;
+        explorando = true;
+        mapa.marcador(null);
+        mapa.volar(VISTA_EXPLORAR);
+        alEntrarExplorar?.();
+        return;
+      }
+      if (explorando) { explorando = false; alSalirExplorar?.(); } // volvió al relato: se cierra el visualizador
+      const paso = pasos.find((p) => p.id === Number(element.dataset.step));
       if (!paso) { // portada: el país, sin ningún pozo
         mapa.marcador(null);
         document.body.classList.add('sin-leyenda'); // sin pozos en el mapa, la leyenda no tiene qué explicar
@@ -260,7 +284,6 @@ export function montarRecorrido({ pasos, mapa, produccion, alTerminar, alSalirDe
       const movil = window.matchMedia('(max-width: 700px)').matches;
       const padding = paso.pozoArriba && movil ? { top: 0, bottom: Math.round(window.innerHeight * 0.45), left: 0, right: 0 } : undefined;
       mapa.volar(paso.vista, { ...(paso.vuelo || {}), ...(padding ? { padding } : {}) });
-      if (paso.final) { enFinal = true; alTerminar?.(); }
     });
   return scroller;
 }

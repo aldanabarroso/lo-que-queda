@@ -24,11 +24,18 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        // las librerías grandes en archivos propios: se cachean aparte del código de la pieza
-        manualChunks: {
-          maplibre: ['maplibre-gl'],
-          deck: ['@deck.gl/core', '@deck.gl/layers', '@deck.gl/extensions', '@deck.gl/mapbox'],
-          d3: ['d3'],
+        // Las librerías grandes en archivos propios: se cachean aparte del código de la pieza. Con la forma de
+        // función (y no de objeto) solo se reparten paquetes de node_modules: el ayudante de Vite para los
+        // import() dinámicos queda en la entrada y MapLibre + deck.gl se bajan recién en la carga del mapa.
+        manualChunks(id) {
+          // ayudantes compartidos (import() dinámico, CommonJS): chunk propio, si no Rollup los mete en el de deck.gl
+          // y la entrada terminaría importando deck.gl entero
+          if (id.includes('preload-helper') || id.includes('commonjsHelpers')) return 'ayudantes';
+          if (!id.includes('node_modules')) return undefined;
+          if (/node_modules[\\/]maplibre-gl/.test(id)) return 'maplibre';
+          if (/node_modules[\\/]@(deck|luma|loaders|math|probe)\.gl/.test(id)) return 'deck';
+          if (/node_modules[\\/]d3(-|[\\/])/.test(id)) return 'd3';
+          return undefined;
         },
       },
     },

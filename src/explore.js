@@ -1,9 +1,32 @@
-// Panel de exploración: filtros, leyenda con conteos, buscador y ficha por pozo.
+// Panel de exploración: filtros, buscador y ficha por pozo. Y la leyenda con conteos (esa va desde la
+// primera carga: el paso País ya la necesita; el panel se arma cuando llegan los pozos de la cuenca).
 
 import { ESTADOS, POBLACION_RAMPA, POBLACION_CORTES } from './paleta.js';
-import { cargarFicha, cargarLote, fmt, esc } from './data.js';
-import { TRAMOS_TIEMPO } from './map.js';
+import { cargarFicha, cargarLote, fmt, esc, TRAMOS_TIEMPO } from './data.js';
 import { dibujarAbandonos } from './chart.js';
+
+/** Leyenda compacta (durante el recorrido): conteos del filtro vigente. Se repinta con cada cambio del mapa. */
+export function montarLeyenda({ mapa }) {
+  const leyenda = document.getElementById('leyenda');
+  function pintar() {
+    const est = mapa.estado, cont = mapa.conteos;
+    // en el paso País se cuentan los puntos que dibuja esa capa; si no, los pozos de la cuenca (segunda carga)
+    const porEstado = est.pais ? cont.paisPorEstado : cont.porEstado;
+    if (!est.pais && !cont.listo) { leyenda.innerHTML = ''; return; } // todavía no llegaron los pozos
+    const alcance = est.pais ? 'Golfo San Jorge' : cont.soloEjido ? 'Ejido de Comodoro Rivadavia' : 'Cuenca del Golfo San Jorge';
+    let html = `<p class="ley-titulo">Estado declarado · ${alcance}</p>`;
+    html += ESTADOS.filter((e) => porEstado[e.cod] > 0).map((e) =>
+      `<div class="ley-item"><span class="ley-dot" style="background:${e.hex}"></span>${e.nombre}<b>${fmt(porEstado[e.cod])}</b></div>`).join('');
+    if (est.pais && cont.otrasCuencas) html += `<div class="ley-item"><span class="ley-dot ley-dot-otras"></span>Otras cuencas<b>${fmt(cont.otrasCuencas)}</b></div>`;
+    if (est.concesiones && cont.sinConcesion !== null) {
+      html += `<div class="ley-item"><span class="ley-anillo"></span>En área sin concesión vigente<b>${fmt(cont.sinConcesion)}</b></div>`;
+    }
+    if (est.poblacion) html += htmlRampa();
+    leyenda.innerHTML = html;
+  }
+  mapa.alCambiar(pintar);
+  pintar();
+}
 
 export function montarExploracion({ mapa, pozos, resumen }) {
   const $ = (id) => document.getElementById(id);
@@ -18,22 +41,6 @@ export function montarExploracion({ mapa, pozos, resumen }) {
     poblacion: false, barrios: false, concesiones: false,
   };
   let panelAbierto = false;
-
-  // ---- leyenda compacta (durante el recorrido): conteos del filtro vigente ----
-  const leyenda = $('leyenda');
-  function pintarLeyenda() {
-    const est = mapa.estado, cont = mapa.conteos;
-    const alcance = est.pais ? 'Golfo San Jorge' : cont.soloEjido ? 'Ejido de Comodoro Rivadavia' : 'Cuenca del Golfo San Jorge';
-    let html = `<p class="ley-titulo">Estado declarado · ${alcance}</p>`;
-    html += ESTADOS.filter((e) => cont.porEstado[e.cod] > 0).map((e) =>
-      `<div class="ley-item"><span class="ley-dot" style="background:${e.hex}"></span>${e.nombre}<b>${fmt(cont.porEstado[e.cod])}</b></div>`).join('');
-    if (est.pais && cont.otrasCuencas) html += `<div class="ley-item"><span class="ley-dot ley-dot-otras"></span>Otras cuencas<b>${fmt(cont.otrasCuencas)}</b></div>`;
-    if (est.concesiones && pozos.cols.conc_cod) {
-      html += `<div class="ley-item"><span class="ley-anillo"></span>En área sin concesión vigente<b>${fmt(cont.sinConcesion)}</b></div>`;
-    }
-    if (est.poblacion) html += htmlRampa();
-    leyenda.innerHTML = html;
-  }
 
   // ---- estado declarado (checkboxes con conteo alineado a la derecha) ----
   const fEstado = $('f-estado');
@@ -91,9 +98,8 @@ export function montarExploracion({ mapa, pozos, resumen }) {
     if (panelAbierto) mapa.aplicar({ ...filtros });
   }
 
-  // Cada cambio del mapa (del panel o del recorrido) refresca leyenda y conteos.
-  mapa.alCambiar(() => {
-    pintarLeyenda();
+  // Cada cambio del mapa (del panel o del recorrido) refresca los conteos del panel.
+  const refrescarConteos = () => {
     const cont = mapa.conteos;
     for (const e of ESTADOS) {
       const n = cont.porEstado[e.cod];
@@ -102,7 +108,9 @@ export function montarExploracion({ mapa, pozos, resumen }) {
     }
     for (const tr of TRAMOS_TIEMPO) if (conteoTramo[tr.cod]) conteoTramo[tr.cod].textContent = fmt(cont.porTramo[tr.cod]);
     $('n-visible').textContent = fmt(mapa.visibles);
-  });
+  };
+  mapa.alCambiar(refrescarConteos);
+  refrescarConteos();
   $('n-total').textContent = fmt(pozos.n);
 
   // ---- buscador por sigla ----
@@ -197,7 +205,7 @@ export function montarExploracion({ mapa, pozos, resumen }) {
     document.body.classList.add('explorando');
     document.body.classList.remove('sin-leyenda'); // al explorar, la leyenda siempre está
     mapa.habilitarExploracion(true);
-    mapa.aplicar({ ...filtros, soloId: null, soloEjido: false, contarEjido: false, pais: false, pozos: true });
+    mapa.aplicar({ ...filtros, soloId: null, soloEjido: false, contarEjido: false, pais: false, pozos: true, limites: true, resaltado: null, resaltadoEtiqueta: null });
   }
   function ocultarPanel() {
     if (!panelAbierto) return;
@@ -220,7 +228,7 @@ export function montarExploracion({ mapa, pozos, resumen }) {
     new IntersectionObserver(([e]) => document.body.classList.toggle('en-metodologia', e.isIntersecting),
       { rootMargin: '0px 0px -50% 0px' }).observe(metodologia);
   }
-  // En el celular el panel es una hoja inferior plegable (arranca plegada para no tapar la tarjeta final).
+  // En el celular el panel es una hoja inferior plegable (arranca plegada: el mapa queda a pantalla completa).
   const btnPlegar = $('btn-plegar');
   btnPlegar.addEventListener('click', () => {
     const abierto = btnPlegar.getAttribute('aria-expanded') === 'true';
@@ -229,7 +237,6 @@ export function montarExploracion({ mapa, pozos, resumen }) {
     panel.classList.toggle('plegado', abierto);
   });
 
-  pintarLeyenda();
   return { alClickPozo: (id) => abrirPozo(id), mostrarPanel, ocultarPanel };
 }
 

@@ -90,6 +90,12 @@ Marcar con [x] al terminar. Cada tarea termina con `npm run build` sin errores y
 - [ ] 3.2 Página "Metodología y fuentes" (`#metodologia` en `index.html`): datasets con enlace y
       fecha de descarga; tabla `GRUPOS`; correcciones; límites del dato; declaración de IA; créditos;
       licencias. Enlaces oficiales de `docs/investigacion-contexto.md`.
+- [x] 2.18 (30/09) El paso 8 queda como cierre del relato (sin panel) con un botón "Explorá el mapa"; el visualizador
+      es una sección aparte en la misma página (`#explorar`, enlace directo `…/#explorar`): ahí se libera el mapa y
+      aparece el panel; al volver a un paso del relato se cierra. Carga en dos etapas (`main.js`): primero textos,
+      gráfico, metodología, mapa base (MapLibre y deck.gl por `import()` dinámico) y pozos del país; después, en
+      segundo plano, pozos de la cuenca, radios, límites, concesiones y barrios (`mapa.cargarDatos()`), con aviso
+      "Cargando los pozos…" si alguien llega antes. La primera carga baja ~125 KB de código en vez de ~2,2 MB.
 - [x] 3.3 (29/09) Enlaces a fuentes oficiales desde las tarjetas y la portada (`F` y `htmlFuente()` en `story.js`;
       solo URLs verificadas en `docs/investigacion-contexto.md` y `docs/formulario.md`).
 - [ ] 3.4 Rendimiento: probar en una compu lenta y en Firefox/Safari; si hace falta, bajar

@@ -54,7 +54,7 @@ data-pipeline/procesar.py   pipeline reproducible; GRUPOS = tabla de equivalenci
 data-pipeline/raw/          insumos descargados entre el 18 y el 26/09/2026 (fecha de cada uno en data-pipeline/README.md)
 public/data/                salidas: pozos_gsj.bin(+meta), fichas/, radios.geojson, limites.geojson,
                             produccion_cuencas.json, operadores.json, resumen.json, conciliacion.md
-src/main.js                 arranque
+src/main.js                 arranque en dos cargas: 1) textos, gráfico, mapa base, pozos del país; 2) pozos de la cuenca y polígonos
 src/data.js                 carga de binario/JSON, fmt()
 src/map.js                  MapLibre + deck.gl; filtros en GPU (DataFilterExtension); API: aplicar(), volar()
                             Mapa base: OpenFreeMap con rótulos `name:es` ("Islas Malvinas") y sin la capa `park`; IGN opcional
@@ -120,6 +120,12 @@ La copia con los datos reales procesados está en la PC de Mariano; `public/data
   `alCambiar(fn)` y los campos de estado `tiempo`, `resaltado`/`resaltadoEtiqueta` (tarjeta) y `seleccionado`
   (ficha). El panel guarda sus propios filtros y se cierra al volver al recorrido. Cifras en `index.html`: con
   `%CLAVE%` que reemplaza `vite.config.js` desde `resumen.json`.
+
+- 30/09: el paso 8 es solo el cierre (botón "Explorá el mapa"); el visualizador es la sección `#explorar` de
+  `index.html`, un paso de scrollama sin tarjeta (story.js llama `alEntrarExplorar`/`alSalirExplorar`). `map.js`
+  se carga con `import()` y recibe los datos por partes con `mapa.cargarDatos({...})`; `explore.js` separa
+  `montarLeyenda` (primera carga) de `montarExploracion` (segunda). No importar `map.js` estáticamente desde otros
+  módulos: arrastraría MapLibre y deck.gl a la primera carga (`TRAMOS_TIEMPO` vive en `data.js` por eso).
 
 ## Qué NO hacer
 

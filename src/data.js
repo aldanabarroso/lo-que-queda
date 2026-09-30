@@ -66,6 +66,17 @@ export async function cargarFicha(idpozo) {
   return recs[String(idpozo)] || null;
 }
 
+// Tramos de "tiempo sin producir" (meses_cod del binario: meses desde el último mes con producción en la
+// serie mensual; 65535 = ningún mes con producción en la serie). Los cortes son los de resumen.trayectoria.
+// Viven acá (y no en map.js) para que el panel no tenga que importar MapLibre y deck.gl.
+export const TRAMOS_TIEMPO = [
+  { cod: 0, nombre: 'Produjo en el último año' },
+  { cod: 1, nombre: 'Sin producir hace 1 a 5 años' },
+  { cod: 2, nombre: 'Sin producir hace más de 5 años' },
+  { cod: 3, nombre: 'Ningún mes con producción en la serie' },
+];
+export const tramoDe = (m) => (m === 65535 ? 3 : m <= 12 ? 0 : m < 60 ? 1 : 2);
+
 /** Formato de miles con punto (castellano rioplatense). */
 export const fmt = (n) => Math.round(n).toLocaleString('es-AR');
 /** Decimal con coma: pct(22.8) → "22,8". */
