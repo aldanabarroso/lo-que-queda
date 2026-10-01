@@ -127,5 +127,14 @@ Actualización 26/09 (tarde): la fuente principal pasa a ser la serie oficial de
 2026T2 es el valor más alto desde 2005T4 (9,3 %), o sea en 20,5 años: de ahí "la más alta en décadas" en la
 portada. Si un trimestre nuevo cambia eso, `textoPortada()` ajusta la frase sola (≥20 años: "en décadas";
 5 a 20: "desde AAAA"; menos: la frase no va). El CV sigue saliendo de `raw/eph-comodoro-2022-2026.csv`.
-Foto de portada: "Comodoro Rivadavia hoy", gentileza El Patagónico, uso autorizado por mail (guardarlo con la
+## Fotos de las tarjetas (01/10/2026)
+
+- Portada y pasos 3, 4, 5 y 6: fotos de los autores (originales en `fotos-originales/`). Crédito "Foto: los autores."
+  hasta que haya seudónimo.
+- Paso 8: foto de **Mauro Esains** (https://www.instagram.com/mauroesains/). Uso autorizado: guardar la autorización
+  por escrito junto con las de la Fototeca y El Patagónico. Crédito "Foto: Mauro Esains" con enlace, en la tarjeta y
+  en Metodología.
+- La foto de El Patagónico (abajo) dejó de usarse el 01/10/2026: la portada pasó a una foto de los autores.
+
+Foto de portada (hasta el 30/09): "Comodoro Rivadavia hoy", gentileza El Patagónico, uso autorizado por mail (guardarlo con la
 autorización de la Fototeca). Se usa con saturación al 80 % para convivir con la paleta.

@@ -97,7 +97,8 @@ Marcar con [x] al terminar. Cada tarea termina con `npm run build` sin errores y
       segundo plano, pozos de la cuenca, radios, límites, concesiones y barrios (`mapa.cargarDatos()`), con aviso
       "Cargando los pozos…" si alguien llega antes. La primera carga baja ~125 KB de código en vez de ~2,2 MB.
 - [x] 2.19 (01/10) Fotos de los autores en las tarjetas 3, 4, 5, 6 y 8 y nueva foto de portada (`fotos-originales/`
-      → `public/img/paso-N.jpg` y `portada.jpg`; crédito "Foto: los autores"). La de El Patagónico ya no se usa. El
+      → `public/img/paso-N.jpg` y `portada.jpg`; crédito "Foto: los autores", salvo la del paso 8: "Foto: Mauro
+      Esains", con enlace a su Instagram y uso autorizado). La de El Patagónico ya no se usa. El
       paso 7 queda sin foto; en celular las tarjetas van sin foto (la portada sí). Textos alternativos provisorios
       en `definirPasos()`: los revisa Aldana.
 - [x] 3.3 (29/09) Enlaces a fuentes oficiales desde las tarjetas y la portada (`F` y `htmlFuente()` en `story.js`;

@@ -85,8 +85,8 @@ redacción, se cambia; lo único que no se puede volver atrás es lo marcado com
 
 ## Fotos (01/10)
 
-Fotos de los autores en las tarjetas 3, 4, 5, 6 y 8 y en la portada; crédito "Foto: los autores." (hasta que haya
-seudónimo). El texto alternativo es lo que lee un lector de pantalla: describe la foto, no la interpreta. Son
+Fotos de los autores en las tarjetas 3, 4, 5 y 6 y en la portada; crédito "Foto: los autores." (hasta que haya
+seudónimo). La del paso 8 es de Mauro Esains: crédito "Foto: Mauro Esains", con enlace a su Instagram. El texto alternativo es lo que lee un lector de pantalla: describe la foto, no la interpreta. Son
 provisorios, revisalos en `definirPasos()` (`src/story.js`) y en `index.html` (portada):
 
 - Portada: "La estructura oxidada de un aparato de bombeo sobre una loma, frente al mar".

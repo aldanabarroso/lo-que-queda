@@ -18,6 +18,8 @@ const F = {
   muniCH679: { t: 'Municipalidad de Comodoro Rivadavia, 27/8/2024', url: 'https://www.comodoro.gov.ar/2024/08/27/el-municipio-intervino-ante-un-nuevo-derrame-de-petroleo-en-un-yacimiento-ypf/' },
   censo: { t: 'Censo 2022', url: 'https://www.comodoro.gov.ar/miciudad/2025/10/13/censo-nacional-de-poblacion-hogares-y-viviendas-2022/' },
   indecEPH: { t: 'INDEC, EPH', url: 'https://www.indec.gob.ar/uploads/informesdeprensa/mercado_trabajo_eph_2trim26433FCBC5A8.pdf' },
+  // crédito de la foto del paso 8 (uso autorizado; ver docs/investigacion-contexto.md)
+  mauroEsains: { t: 'Mauro Esains', url: 'https://www.instagram.com/mauroesains/' },
 };
 
 /** Arma el HTML de una línea de fuentes: partes de texto o {t, url} (se abren en otra pestaña). */
@@ -123,8 +125,8 @@ export function definirPasos(R) {
   }
   const desdeSerie = t ? t.cobertura.desde.slice(0, 4) : null;
 
-  // Fotos de los autores (originales en fotos-originales/, copiadas en public/img/). En celular no se muestran.
-  // Textos alternativos provisorios: los revisa Aldana.
+  // Fotos de los autores (originales en fotos-originales/, copiadas en public/img/), salvo la del paso 8, de
+  // Mauro Esains (crédito con enlace). En celular no se muestran. Textos alternativos provisorios: los revisa Aldana.
   const foto = (archivo, alt) => ({ src: `${import.meta.env.BASE_URL}img/${archivo}`, alt, credito: 'Foto: los autores.' });
 
   // Capas y filtros de partida de cada paso: todo apagado, todos los estados visibles.
@@ -215,7 +217,7 @@ export function definirPasos(R) {
       titulo: 'pozos sin producir en la cuenca',
       texto: `${ritmo ? `${fmt(ritmo.paradosMas5)} pozos inactivos o a abandonar llevan más de cinco años sin producir. Entre ${ritmo.desdeAnio} y ${ritmo.hastaAnio} las operadoras declararon abandonados ${fmt(ritmo.total)} pozos: unos ${fmt(ritmo.porAnio)} por año. ` : ''}YPF tenía provisionados US$ 915 millones por abandono de pozos al cierre de 2024. No existe un registro público de pasivos ambientales hidrocarburíferos. Lo que hay es este dato, pozo por pozo. Exploralo.`,
       fuente: [F.capIV, F.ypf20f],
-      foto: foto('paso-8.jpg', 'Un aparato de bombeo en la meseta, bajo un cielo cargado de nubes oscuras'),
+      foto: { ...foto('paso-8.jpg', 'Un aparato de bombeo en la meseta, bajo un cielo cargado de nubes oscuras'), credito: `Foto: ${htmlFuente([F.mauroEsains])}.` },
       vista: { center: [-68.3, -46.2], zoom: 7 },
       capas: { ...base, limites: true },
       boton: { texto: 'Explorá el mapa', destino: 'explorar' }, // lleva a la sección del visualizador

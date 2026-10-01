@@ -29,6 +29,7 @@ const ENLACES = {
   muniPasivos: 'https://www.comodoro.gov.ar/2024/03/20/coluccio-con-esta-ordenanza-nos-ponemos-a-la-altura-de-la-industria-hidrocarburifera/', // ídem
   censoMuni: 'https://www.comodoro.gov.ar/miciudad/2025/10/13/censo-nacional-de-poblacion-hogares-y-viviendas-2022/', // ídem
   ephInforme2T2026: 'https://www.indec.gob.ar/uploads/informesdeprensa/mercado_trabajo_eph_2trim26433FCBC5A8.pdf', // ídem
+  mauroEsains: 'https://www.instagram.com/mauroesains/', // autor de la foto del paso 8 (ídem, sección Fotos)
   // créditos: páginas de los proyectos (homepage de cada package.json en node_modules)
   openfreemap: 'https://openfreemap.org/',
   osm: 'https://www.openstreetmap.org/copyright',
@@ -538,8 +539,9 @@ function creditos() {
       <ul>
         <li><strong>Foto del Pozo N° 2</strong> (diciembre de 1907): Fototeca de Comodoro Rivadavia – Archivo
           Histórico Municipal; negativo cedido por el Archivo General de la Nación. Se usa con autorización.</li>
-        <li><strong>Fotos de la portada y de los pasos 3, 4, 5, 6 y 8</strong>: tomadas por los autores. Son
+        <li><strong>Fotos de la portada y de los pasos 3, 4, 5 y 6</strong>: tomadas por los autores. Son
           fotografías, no imágenes generadas con inteligencia artificial.</li>
+        <li><strong>Foto del paso 8</strong>: ${enlace(ENLACES.mauroEsains, 'Mauro Esains')}. Se usa con autorización.</li>
         <li><strong>Bibliotecas de código abierto</strong>: ${enlace(ENLACES.maplibre, 'MapLibre GL JS')}
           (BSD-3-Clause), ${enlace(ENLACES.deck, 'deck.gl')} (MIT), ${enlace(ENLACES.d3, 'D3')} (ISC) y
           ${enlace(ENLACES.scrollama, 'Scrollama')} (MIT). La web se compila con ${enlace(ENLACES.vite, 'Vite')} (MIT).</li>
