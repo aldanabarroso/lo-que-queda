@@ -83,6 +83,21 @@ redacción, se cambia; lo único que no se puede volver atrás es lo marcado com
   vos (tarea 9 de `docs/para-aldana.md`); está marcado con `TEXTO PROVISORIO` en el código.
 - La autoría queda oculta (`const AUTORIA = null`) hasta que haya seudónimo.
 
+## Fotos (01/10)
+
+Fotos de los autores en las tarjetas 3, 4, 5, 6 y 8 y en la portada; crédito "Foto: los autores." (hasta que haya
+seudónimo). El texto alternativo es lo que lee un lector de pantalla: describe la foto, no la interpreta. Son
+provisorios, revisalos en `definirPasos()` (`src/story.js`) y en `index.html` (portada):
+
+- Portada: "La estructura oxidada de un aparato de bombeo sobre una loma, frente al mar".
+- Paso 3: "Vista aérea de una planta petrolera con tanques de PECOM, playas de estacionamiento y árboles; detrás, la meseta".
+- Paso 4: "Las letras oxidadas de un viejo cartel de YPF entre pastizales, frente a un galpón".
+- Paso 5: "Un aparato de bombeo cercado sobre una loma, con el mar de fondo".
+- Paso 6: "Vista aérea de un aparato de bombeo cercado en medio de un barrio, entre casas y calles de tierra con charcos".
+- Paso 8: "Un aparato de bombeo en la meseta, bajo un cielo cargado de nubes oscuras".
+
+Si querés sumar dónde se tomó cada una (por ejemplo "Km 3, 2026. Foto: los autores."), va en el pie de foto.
+
 ## Para decidir (no se tocó)
 
 - **Portada, "la desocupación es la más alta en décadas".** Ahora se ve (antes el dato no estaba generado). Se apoya

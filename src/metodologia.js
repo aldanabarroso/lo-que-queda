@@ -538,8 +538,8 @@ function creditos() {
       <ul>
         <li><strong>Foto del Pozo N° 2</strong> (diciembre de 1907): Fototeca de Comodoro Rivadavia – Archivo
           Histórico Municipal; negativo cedido por el Archivo General de la Nación. Se usa con autorización.</li>
-        <li><strong>Foto de portada</strong> («Comodoro Rivadavia hoy»): gentileza El Patagónico. Se usa con
-          autorización.</li>
+        <li><strong>Fotos de la portada y de los pasos 3, 4, 5, 6 y 8</strong>: tomadas por los autores. Son
+          fotografías, no imágenes generadas con inteligencia artificial.</li>
         <li><strong>Bibliotecas de código abierto</strong>: ${enlace(ENLACES.maplibre, 'MapLibre GL JS')}
           (BSD-3-Clause), ${enlace(ENLACES.deck, 'deck.gl')} (MIT), ${enlace(ENLACES.d3, 'D3')} (ISC) y
           ${enlace(ENLACES.scrollama, 'Scrollama')} (MIT). La web se compila con ${enlace(ENLACES.vite, 'Vite')} (MIT).</li>
