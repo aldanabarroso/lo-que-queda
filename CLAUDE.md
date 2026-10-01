@@ -43,6 +43,7 @@ npm run build               # dist/
 npm run preview             # sirve dist/ en :4173
 npm run data                # regenera public/data/* desde data-pipeline/raw/ (necesita geopandas)
 py -3.12 data-pipeline\procesar.py --check   # Windows, si `python` es el acceso directo de la Microsoft Store
+py -3.12 scripts\fotos_a_webp.py             # fotos-originales/*.jpg → public/img/*.webp (800 px, calidad 80; necesita pillow)
 ```
 
 Python del pipeline: `pip install -r data-pipeline/requirements.txt` (versiones probadas el 29/09/2026).
@@ -65,6 +66,7 @@ src/metodologia.js          página "Metodología y fuentes" armada con resumen.
 src/paleta.js               colores validados
 src/styles.css              estilos; media query móvil al final
 index.html                  esqueleto + panel + ficha + sección metodología
+fotos-originales/           fotos en JPG tal como llegaron (fuente); la web usa public/img/*.webp (scripts/fotos_a_webp.py)
 .github/workflows/deploy.yml  publica dist/ en GitHub Pages en cada push a main
 ```
 

@@ -2,8 +2,6 @@ node_modules/
 dist/
 data-pipeline/_tmp_*/
 __pycache__/
-# fotos originales de los autores: las que usa la web están copiadas en public/img/ con el mismo nombre
-fotos-originales/
 .DS_Store
 Thumbs.db
 desktop.ini

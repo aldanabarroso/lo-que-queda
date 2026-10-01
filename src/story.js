@@ -125,9 +125,10 @@ export function definirPasos(R) {
   }
   const desdeSerie = t ? t.cobertura.desde.slice(0, 4) : null;
 
-  // Fotos de los autores (originales en fotos-originales/, copiadas en public/img/), salvo la del paso 8, de
-  // Mauro Esains (crédito con enlace). En celular no se muestran. Textos alternativos provisorios: los revisa Aldana.
-  const foto = (archivo, alt) => ({ src: `${import.meta.env.BASE_URL}img/${archivo}`, alt, credito: 'Foto: los autores.' });
+  // Fotos de los autores, salvo la del paso 8, de Mauro Esains (crédito con enlace). Los originales están en
+  // fotos-originales/; la web usa la versión WebP de public/img/ (scripts/fotos_a_webp.py). En celular no se
+  // muestran. Textos alternativos provisorios: los revisa Aldana.
+  const foto = (nombre, alt) => ({ src: `${import.meta.env.BASE_URL}img/${nombre}.webp`, alt, credito: 'Foto: los autores.' });
 
   // Capas y filtros de partida de cada paso: todo apagado, todos los estados visibles.
   const base = {
@@ -145,7 +146,7 @@ export function definirPasos(R) {
       texto: 'El Estado perforaba en Comodoro Rivadavia para darle agua al pueblo. La mañana del 13 de diciembre, a unos 540 metros, del Pozo N° 2 salió petróleo. Al día siguiente, un decreto del presidente Figueroa Alcorta prohibió pedir permisos mineros en cinco leguas a la redonda. En su lugar hoy está el Museo Nacional del Petróleo.',
       fuente: [F.mecon, F.ley24799],
       foto: {
-        src: `${import.meta.env.BASE_URL}img/pozo2-1907.jpg`,
+        src: `${import.meta.env.BASE_URL}img/pozo2-1907.webp`,
         alt: 'Torre de perforación del Pozo N° 2, con carros tirados por caballos y trabajadores al pie, diciembre de 1907',
         credito: 'Pozo N° 2, diciembre de 1907. Fototeca de Comodoro Rivadavia – Archivo Histórico Municipal (negativo cedido por el AGN).',
         posicion: '45% 10%', // encuadre: que entren la torre y los carros
@@ -170,7 +171,7 @@ export function definirPasos(R) {
       titulo: 'pozos en la cuenca con más pozos del país',
       texto: `${mayuscula(proporcion(c.sin_produccion, c.total))} no producen: ${fmt(c.Inactivo)} inactivos, ${fmt(c['A abandonar'])} a abandonar y ${fmt(c.Abandonado)} abandonados, según lo que cada operadora declara ante la Secretaría de Energía. De los ${fmt(R.antiguedad.ya_en_2006)} pozos que ya figuraban en 2006, hoy están activos ${fmt(R.antiguedad.ya_en_2006_por_grupo.Activo)}.${t ? ` Y ${fmt(t.nunca_en_serie_no_abandonados)} pozos inactivos o a abandonar no registran ni un mes de producción desde ${desdeSerie}.` : ''}`,
       fuente: [F.capIV],
-      foto: foto('paso-3.jpg', 'Vista aérea de una planta petrolera con tanques de PECOM, playas de estacionamiento y árboles; detrás, la meseta'),
+      foto: foto('paso-3', 'Vista aérea de una planta petrolera con tanques de PECOM, playas de estacionamiento y árboles; detrás, la meseta'),
       vista: { center: [-68.3, -46.2], zoom: 7 },
       capas: { ...base },
     },
@@ -179,7 +180,7 @@ export function definirPasos(R) {
       titulo: 'pozos de YPF cambiaron de manos',
       texto: `Entre 2024 y 2026 YPF se retiró de la cuenca (Proyecto Andes). ${exYpf.length ? `Hoy esos pozos figuran a nombre de ${lista(exYpf)}, entre otras.` : 'Hoy esos pozos figuran a nombre de otras operadoras.'} Y ${fmt(c.sin_empresa.total)} pozos no tienen ninguna empresa asignada; ${fmt(c.sin_empresa.Abandonado)} de ellos están abandonados.${sinConcesion ? ` Además, ${fmt(sinConcesion)} pozos están en áreas que no figuran como concesión de explotación vigente: en el mapa, los que tienen un anillo.` : ''}`,
       fuente: [F.capIV, 'Secretaría de Energía, concesiones de explotación', F.ypf20f, 'Decreto Chubut 1509/2024'],
-      foto: foto('paso-4.jpg', 'Las letras oxidadas de un viejo cartel de YPF entre pastizales, frente a un galpón'),
+      foto: foto('paso-4', 'Las letras oxidadas de un viejo cartel de YPF entre pastizales, frente a un galpón'),
       vista: { center: [-68.3, -46.2], zoom: 7 },
       capas: { ...base, concesiones: true },
       // TODO semana 3 (tarea 3.1): colorear por operadora con "antes / después" (ver docs/plans).
@@ -190,7 +191,7 @@ export function definirPasos(R) {
       titulo: 'pozos dentro del ejido de Comodoro Rivadavia',
       texto: `${fmt(e.Activo)} están activos. ${fmt(e.Abandonado)} están abandonados. ${fmt(p.pobl_en_radios_con_pozo)} personas, el ${dec(p.pobl_en_radios_con_pozo_pct)} % de Comodoro y Rada Tilly, viven en un radio censal con al menos un pozo.${t ? ` ${fmt(t.ejido_nunca_en_serie)} de los pozos del ejido no produjeron ni un mes desde ${desdeSerie}.` : ''}`,
       fuente: [F.capIV, 'Municipalidad de Comodoro Rivadavia', F.censo],
-      foto: foto('paso-5.jpg', 'Un aparato de bombeo cercado sobre una loma, con el mar de fondo'),
+      foto: foto('paso-5', 'Un aparato de bombeo cercado sobre una loma, con el mar de fondo'),
       vista: { center: [-67.55, -45.85], zoom: 10.3 },
       capas: { ...base, poblacion: true, limites: true, contarEjido: true },
     },
@@ -199,7 +200,7 @@ export function definirPasos(R) {
       titulo: 'pozos en un yacimiento que es un barrio',
       texto: `En Campamento Central – Bella Vista Este, el yacimiento del Pozo N° 2, hoy hay ${fmt(k.Abandonado)} pozos abandonados y ${fmt(k.Activo)} activos. La Resolución SE 5/96 exige que el abandono de pozos en ejidos urbanos sea siempre definitivo.${topBarrios.length ? ` Los barrios con más pozos: ${topBarrios.map((b) => `${b.barrio} (${fmt(b.pozos)})`).join(', ')}.${barrioSinActivos ? ` En ${barrioSinActivos.barrio} hay ${fmt(barrioSinActivos.pozos)} pozos y ninguno está activo.` : ''}` : ''}`,
       fuente: [F.capIV, F.res596, 'Municipalidad de Comodoro Rivadavia, barrios'],
-      foto: foto('paso-6.jpg', 'Vista aérea de un aparato de bombeo cercado en medio de un barrio, entre casas y calles de tierra con charcos'),
+      foto: foto('paso-6', 'Vista aérea de un aparato de bombeo cercado en medio de un barrio, entre casas y calles de tierra con charcos'),
       vista: { center: [-67.49, -45.82], zoom: 13 },
       capas: { ...base, soloEjido: true, limites: true, barrios: true },
     },
@@ -217,7 +218,7 @@ export function definirPasos(R) {
       titulo: 'pozos sin producir en la cuenca',
       texto: `${ritmo ? `${fmt(ritmo.paradosMas5)} pozos inactivos o a abandonar llevan más de cinco años sin producir. Entre ${ritmo.desdeAnio} y ${ritmo.hastaAnio} las operadoras declararon abandonados ${fmt(ritmo.total)} pozos: unos ${fmt(ritmo.porAnio)} por año. ` : ''}YPF tenía provisionados US$ 915 millones por abandono de pozos al cierre de 2024. No existe un registro público de pasivos ambientales hidrocarburíferos. Lo que hay es este dato, pozo por pozo. Exploralo.`,
       fuente: [F.capIV, F.ypf20f],
-      foto: { ...foto('paso-8.jpg', 'Un aparato de bombeo en la meseta, bajo un cielo cargado de nubes oscuras'), credito: `Foto: ${htmlFuente([F.mauroEsains])}.` },
+      foto: { ...foto('paso-8', 'Un aparato de bombeo en la meseta, bajo un cielo cargado de nubes oscuras'), credito: `Foto: ${htmlFuente([F.mauroEsains])}.` },
       vista: { center: [-68.3, -46.2], zoom: 7 },
       capas: { ...base, limites: true },
       boton: { texto: 'Explorá el mapa', destino: 'explorar' }, // lleva a la sección del visualizador

@@ -101,6 +101,10 @@ Marcar con [x] al terminar. Cada tarea termina con `npm run build` sin errores y
       Esains", con enlace a su Instagram y uso autorizado). La de El Patagónico ya no se usa. El
       paso 7 queda sin foto; en celular las tarjetas van sin foto (la portada sí). Textos alternativos provisorios
       en `definirPasos()`: los revisa Aldana.
+- [x] 2.20 (01/10) Fotos en WebP: `scripts/fotos_a_webp.py` (Pillow) convierte `fotos-originales/*.jpg` a
+      `public/img/*.webp` a 800 px de ancho y calidad 80, sin metadatos. Las siete fotos pasan de 2.036 KB a 609 KB
+      (70 % menos). La web usa solo WebP; los JPG originales (también el del Pozo N° 2) quedan versionados en
+      `fotos-originales/`. Para cambiar una foto: reemplazar el original y volver a correr el script.
 - [x] 3.3 (29/09) Enlaces a fuentes oficiales desde las tarjetas y la portada (`F` y `htmlFuente()` en `story.js`;
       solo URLs verificadas en `docs/investigacion-contexto.md` y `docs/formulario.md`).
 - [ ] 3.4 Rendimiento: probar en una compu lenta y en Firefox/Safari; si hace falta, bajar
