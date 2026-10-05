@@ -97,7 +97,10 @@ body.error-pozos #cargando { display: block; border: 1.5px solid var(--a-abandon
 .mh-punto { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #fffcf6; border: 2.5px solid var(--texto); color: var(--texto); box-shadow: 0 2px 8px rgba(0,0,0,.22); transition: background .15s, color .15s; }
 .mh-etiqueta { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); padding: 3px 9px; background: #fffcf6; border-radius: 4px; font-size: 13px; font-weight: 600; color: var(--texto); white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
 .marcador-historia.rotulo-izq .mh-etiqueta { left: auto; right: 40px; } /* rótulo a la izquierda si a la derecha choca con otro */
-/* Los marcadores (HTML) van por encima de la capa de pozos de deck.gl, que se dibuja en un lienzo posterior. */
+/* Los marcadores (HTML) van por encima de la capa de pozos de deck.gl. El lienzo de deck.gl vive dentro del
+   contenedor de controles de arriba a la izquierda de MapLibre (MapboxOverlay se agrega como control), que
+   trae z-index 2: se baja a 0 (sigue por encima del mapa base, que va antes en el DOM) y los marcadores, a 1. */
+#map .maplibregl-ctrl-top-left { z-index: 0; }
 .maplibregl-marker { z-index: 1; }
 .marcador-historia:hover .mh-etiqueta, .marcador-historia:focus-visible .mh-etiqueta,
 .marcador-historia.activa .mh-etiqueta { background: var(--texto); color: var(--fondo); }
