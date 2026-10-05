@@ -127,6 +127,39 @@ Actualización 26/09 (tarde): la fuente principal pasa a ser la serie oficial de
 2026T2 es el valor más alto desde 2005T4 (9,3 %), o sea en 20,5 años: de ahí "la más alta en décadas" en la
 portada. Si un trimestre nuevo cambia eso, `textoPortada()` ajusta la frase sola (≥20 años: "en décadas";
 5 a 20: "desde AAAA"; menos: la frase no va). El CV sigue saliendo de `raw/eph-comodoro-2022-2026.csv`.
+## Historias del paso 7, "Convivir con los pozos" (05/10/2026)
+
+Excepción a la regla de fuente oficial (CLAUDE.md, regla 3): se cita prensa, siempre atribuida y con enlace.
+Sin nombres de vecinos ni calles. Pozos del registro: los nombran las fuentes en BV-577(d) y CH-679; en los otros
+tres casos la relación la establecieron los autores (las notas no dan siglas).
+
+- **Escuela N° 169** (barrio Stella Maris; pozos R-87, R-88 y S/L-564, abandonados). La Nación, 27/5/2002
+  (https://www.lanacion.com.ar/sociedad/peligro-bajo-tierra-en-comodoro-rivadavia-nid399990/): olor a gas, traslado
+  de alumnos en mayo de 2002; estudios de Repsol YPF hallan un pozo no sellado bajo la cocina. El Patagónico,
+  18/3/2015 (https://www.elpatagonico.com/la-escuela-que-se-construyo-tres-pozos-petroleros-que-no-habian-sido-sellados-n773657):
+  ubica el hallazgo en abril de 2001; tres pozos; edificio nuevo inaugurado por la Provincia el 6/12/2011.
+  **Las fechas no coinciden: se dan las dos, atribuidas.**
+- **Bella Vista Sur, 25/6/2024** (YPF.Ch.BV-577(d), declarado en extracción efectiva). Municipalidad, 25/6/2024
+  (https://www.comodoro.gov.ar/2024/06/25/coluccio-se-esta-evaluando-la-distancia-y-el-alcance-de-la-contingencia/):
+  derrame de crudo de YPF, al menos 600 m, terrenos privados. El Chubut, 6/7/2024
+  (https://www.elchubut.com.ar/regionales/2024-7-5-21-35-0-provincia-sanciono-a-ypf-por-el-derrame-de-hidrocarburos-en-bella-vista):
+  multa provincial, Disposición 011/2024, por la rotura de la línea de conducción del pozo BV 577 (d). El Extremo
+  Sur, 11/7/2024 (https://www.elextremosur.com/nota/49898-derrames-y-pozos-abandonados-a-la-vuelta-de-la-esquina-una-ciudad-que-crecio-de-la-mano-del-petroleo/):
+  contexto; nombra también un "pozo 578" (no usar).
+- **Un pozo dentro de una casa, enero de 2026** (YPF.Ch.-325). Diario Jornada, 21/1/2026
+  (https://www.diariojornada.com.ar/409911/magazine/derrumbe_emergio_un_pozo_petrolero_dentro_de_su_casa): en el
+  deslizamiento del cerro Hermitte (más de 90 familias evacuadas) un pozo quedó a la vista dentro de una casa del
+  sector Sismográfica; la nota atribuye el derrumbe a la geología. El Chubut, 10/2/2026
+  (https://www.elchubut.com.ar/regionales/2026-2-10-21-55-0-cerro-hermitte-aseguran-que-la-actividad-petrolera-no-fue-el-origen-de-los-deslizamientos):
+  el secretario de Ambiente provincial afirma que la actividad petrolera no fue el origen. En la capa municipal el
+  pozo cae en el barrio General Enrique Mosconi (la nota dice Sismográfica).
+- **Petróleo en un patio, Km 5** (YPF.Ch.-724). ADNSur, 27/2/2026
+  (https://www.adnsur.com.ar/sociedad/cavaba-un-pozo-en-su-patio-de-la-zona-norte-de-comodoro-y-se-encontro-con-petroleo_a69a227fe66a78182fdf02017):
+  un vecino encuentra petróleo al cavar; no hubo denuncia. Las cifras generales que da el funcionario en esa nota
+  (6.000 pozos, 3.700 abandonados) **no se usan**: no tienen respaldo oficial (ver "Sin confirmación oficial").
+- **Surgencia del CH-679, 25/8/2024** (YPF.Ch.-679): comunicado municipal del 27/8/2024 (arriba, sección Ambiente).
+  El municipio lo describe como pozo de 1927 abandonado "aparentemente" en 1962: citar siempre atribuido.
+
 ## Fotos de las tarjetas (01/10/2026)
 
 - Portada y pasos 3, 4, 5 y 6: fotos de los autores (originales en `fotos-originales/`). Crédito "Foto: los autores."

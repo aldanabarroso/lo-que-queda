@@ -98,6 +98,21 @@ provisorios, revisalos en `definirPasos()` (`src/story.js`) y en `index.html` (p
 
 Si querés sumar dónde se tomó cada una (por ejemplo "Km 3, 2026. Foto: los autores."), va en el pie de foto.
 
+## Paso 7 · Convivir con los pozos (05/10)
+
+Reemplaza a "Un radio censal". Todo es borrador: revisá la voz. La tarjeta está en `definirPasos()`
+(`src/story.js`) y cada historia en `src/historias.js` (`titulo`, `fecha`, `texto` en párrafos y `fuentes`).
+
+- Tarjeta: cifra "2.507 pozos dentro de barrios de Comodoro Rivadavia" (`resumen.barrios`). Texto: "Detrás de
+  los puntos del mapa hay vecinos. Algunos supieron que vivían al lado de un pozo por un olor a gas, un derrame,
+  un derrumbe o al cavar en el patio. Estas son algunas de esas historias, contadas por la prensa local y el
+  municipio. Elegí una en el mapa o en esta lista:" + botones con las cinco historias.
+- Cada historia: 2 párrafos breves en palabras nuestras, todo atribuido ("según La Nación…"), sin nombres de
+  vecinos ni calles. Lo que dice el medio (por ejemplo "no habían sido sellados") va a nombre del medio.
+- Se dejó afuera a propósito: las cifras generales de pozos que da un funcionario en la nota de ADNSur (sin
+  respaldo oficial), el "pozo 578" de El Extremo Sur (las fuentes oficiales dicen BV-577(d)) y cualquier
+  atribución del derrumbe del cerro Hermitte al petróleo (las dos notas dicen lo contrario).
+
 ## Para decidir (no se tocó)
 
 - **Portada, "la desocupación es la más alta en décadas".** Ahora se ve (antes el dato no estaba generado). Se apoya

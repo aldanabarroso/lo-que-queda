@@ -105,6 +105,12 @@ Marcar con [x] al terminar. Cada tarea termina con `npm run build` sin errores y
       `public/img/*.webp` a 800 px de ancho y calidad 80, sin metadatos. Las siete fotos pasan de 2.036 KB a 609 KB
       (70 % menos). La web usa solo WebP; los JPG originales (también el del Pozo N° 2) quedan versionados en
       `fotos-originales/`. Para cambiar una foto: reemplazar el original y volver a correr el script.
+- [x] 2.21 (05/10) El paso 7 pasa de "Un radio censal" a **"Convivir con los pozos"**: cifra `barrios.pozos_en_barrios`;
+      cinco historias de vecinos (Escuela N° 169, derrame en Bella Vista Sur, pozo dentro de una casa, petróleo en un
+      patio, surgencia del CH-679) con marcador-botón en el mapa (`mapa.historias()`), lista de botones en la
+      tarjeta y ventana con resumen, datos de cada pozo del registro y fuentes (`src/historias.js`). Prensa citada
+      como excepción a la regla 3 (CLAUDE.md). Textos provisorios: los revisa Aldana
+      (`docs/cambios-textos-2026-09-29.md`).
 - [x] 3.3 (29/09) Enlaces a fuentes oficiales desde las tarjetas y la portada (`F` y `htmlFuente()` en `story.js`;
       solo URLs verificadas en `docs/investigacion-contexto.md` y `docs/formulario.md`).
 - [ ] 3.4 Rendimiento: probar en una compu lenta y en Firefox/Safari; si hace falta, bajar

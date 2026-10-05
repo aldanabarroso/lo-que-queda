@@ -12,6 +12,8 @@
 import './metodologia.css';
 import { fmt } from './data.js';
 import { ESTADOS } from './paleta.js';
+import { HISTORIAS, FUENTES_HISTORIAS } from './historias.js';
+import { htmlFuente } from './fuentes.js';
 
 // Autoría: seudónimo pendiente. No poner nombres reales hasta después del fallo del jurado.
 // Mientras sea null, la línea de autoría no se muestra.
@@ -363,22 +365,19 @@ function proceso(R) {
   controles.push(si`<li>${N(q.no_informado)} pozos no tienen estado informado; se cuentan aparte, como «No
     informado».</li>`);
 
-  // Caso CH-679: solo si el pipeline ya lo buscó (R.casos). Si lo buscó y no está, se dice.
-  let ch679 = '';
-  if (R.casos && typeof R.casos === 'object' && 'ch679' in R.casos) {
-    const k = R.casos.ch679;
-    if (k && T(k.sigla)) {
-      ch679 = `<h4>El pozo CH-679</h4>
-        <p>El recorrido menciona la surgencia del pozo CH-679 que informó la Municipalidad el 27/8/2024. Lo
-        ubicamos en el registro comparando la sigla del comunicado (CH-679) con la sigla del Capítulo IV:
-        «${T(k.sigla)}». El comunicado lo sitúa en el Yacimiento Central${si`; en el registro figura en el
-        yacimiento ${T(k.yacimiento)}`}.</p>`;
-    } else if (k === null) {
-      ch679 = `<h4>El pozo CH-679</h4>
-        <p>El recorrido menciona la surgencia del pozo CH-679 que informó la Municipalidad el 27/8/2024. No
-        encontramos esa sigla en el Capítulo IV, así que el pozo se nombra pero no se marca en el mapa.</p>`;
-    }
-  }
+  // Historias del paso 7 ("Convivir con los pozos"): de dónde salen y cómo se relacionan con el registro.
+  const conSigla = HISTORIAS.filter((h) => h.relacion === 'fuente').map((h) => esc(h.titulo));
+  const sinSigla = HISTORIAS.filter((h) => h.relacion === 'autores').map((h) => esc(h.titulo));
+  const ch679 = `<h4>Las historias del paso 7</h4>
+    <p>El paso «Convivir con los pozos» cuenta historias de vecinos que viven al lado de pozos. Es la única parte de
+    la pieza que cita prensa: notas de medios locales y nacionales y comunicados de la Municipalidad, siempre
+    atribuidas («según publicó…») y con enlace; cuando hay una fuente oficial, va primero. Lo que afirma cada medio
+    va a su nombre. No nombramos a vecinos: quien quiera más detalle encuentra la nota enlazada.</p>
+    <p>Los datos de cada pozo (estado declarado, operadora, barrio) salen del Capítulo IV, no de las notas.
+    ${conSigla.length ? `En ${conSigla.join(' y ')}, las fuentes nombran el pozo y lo ubicamos en el registro por su sigla. ` : ''}${sinSigla.length
+      ? `En ${sinSigla.join(', ')}, las notas no nombran pozos: la relación con el registro la establecieron los autores.` : ''}
+    Si dos notas no coinciden en una fecha (como en la Escuela N° 169: abril de 2001 o mayo de 2002), se dan las
+    dos, cada una con su fuente.</p>`;
 
   return `
     <section aria-labelledby="met-proceso">
@@ -507,11 +506,15 @@ function contexto(R) {
       aglomerado Comodoro Rivadavia–Rada Tilly, con su coeficiente de variación y su intervalo de
       confianza.</li>`);
   }
+  // Historias del paso 7: prensa local y nacional y comunicados municipales (siempre atribuidos).
+  const historias = HISTORIAS.map((h) => `<li>${esc(h.titulo)}: ${htmlFuente(h.fuentes)}.</li>`).join('');
   return `
     <section aria-labelledby="met-contexto">
       ${titulo('met-contexto')}
       <p>Cada afirmación del recorrido que no sale de los datos tiene una fuente oficial o primaria:</p>
       <ul>${items.join('')}</ul>
+      ${FUENTES_HISTORIAS.length ? `<p>Las historias del paso 7 («Convivir con los pozos») citan, además, prensa y
+      comunicados municipales, siempre atribuidos:</p><ul>${historias}</ul>` : ''}
     </section>`;
 }
 

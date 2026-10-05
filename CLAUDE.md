@@ -22,6 +22,10 @@ plan antes de tocar código.
 3. **Toda afirmación de contexto lleva fuente oficial** (InfoLeg, SEC/20-F de YPF, Boletín Oficial,
    comunicado municipal). Sin fuente oficial, la frase no va. Las fuentes verificadas están en
    `docs/specs/…` §5 y en `docs/investigacion-contexto.md`.
+   **Única excepción (decidida el 05/10/2026):** las historias del paso 7, "Convivir con los pozos"
+   (`src/historias.js`), pueden citar prensa, siempre atribuida ("según publicó…") y con enlace; si hay fuente
+   oficial va primero. Sin nombres de vecinos ni calles. Si las notas no nombran el pozo, se aclara que la
+   relación con el registro la establecieron los autores.
 4. **La paleta está validada; no se cambia sin revalidar** (`src/paleta.js`). Estado → color en orden
    fijo. El gris de "abandonado" es deliberado.
 5. **Uso de IA declarado.** La IA (Claude) asiste en datos y código bajo supervisión. Las decisiones
@@ -60,6 +64,8 @@ src/data.js                 carga de binario/JSON, fmt()
 src/map.js                  MapLibre + deck.gl; filtros en GPU (DataFilterExtension); API: aplicar(), volar()
                             Mapa base: OpenFreeMap con rótulos `name:es` ("Islas Malvinas") y sin la capa `park`; IGN opcional
 src/story.js                pasos del recorrido (textos + vista + capas) y scrollama
+src/historias.js            historias del paso 7 (textos, pozos, fuentes) y su ventana; marcadores vía map.js
+src/fuentes.js              fuentes con enlace (F) y htmlFuente(), compartidas por tarjetas, historias y metodología
 src/explore.js              panel de filtros, leyenda con conteos, buscador, ficha
 src/chart.js                gráficos D3: producción por cuenca (paso 2) y abandonos por año (panel)
 src/metodologia.js          página "Metodología y fuentes" armada con resumen.json (+ metodologia.css)

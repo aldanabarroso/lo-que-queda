@@ -131,8 +131,8 @@ export function crearMapa({ onClickPozo }) {
     concesiones: false,
     barrios: false,
     soloId: null,      // idpozo: si está definido, se ve solo ese pozo (paso del Pozo N° 2)
-    resaltado: null,   // idpozo que nombra una tarjeta (CH-679): anillo y rótulo
-    resaltadoEtiqueta: null, // rótulo al lado del anillo (opcional)
+    resaltado: null,   // idpozo (o lista de idpozo) que nombra una tarjeta: anillo en cada uno
+    resaltadoEtiqueta: null, // rótulo al lado del anillo (opcional; solo si es un único pozo)
     seleccionado: null, // idpozo de la ficha abierta: anillo sin rótulo
   };
   const atenuado = () => estado.poblacion && !estado.soloEjido && !estado.pais;
@@ -367,8 +367,9 @@ export function crearMapa({ onClickPozo }) {
   };
   function capasResaltado() {
     if (!estado.pozos) return [];
-    const pos = posDe(estado.resaltado);
-    const anillos = [pos, posDe(estado.seleccionado)].filter(Boolean);
+    const varios = Array.isArray(estado.resaltado);
+    const pos = varios ? null : posDe(estado.resaltado);
+    const anillos = [...(varios ? estado.resaltado.map(posDe) : [pos]), posDe(estado.seleccionado)].filter(Boolean);
     if (!anillos.length) return [];
     const capas = [new ScatterplotLayer({
       id: 'resaltado',
@@ -449,6 +450,32 @@ export function crearMapa({ onClickPozo }) {
       .addTo(map);
   }
 
+  // Marcadores de las historias del paso 7: un botón por historia, en el centro de sus pozos, con su rótulo.
+  // Son botones de verdad (se usan con teclado). Se ponen cuando llegan los pozos y se muestran solo en ese paso.
+  let historias = [], alElegirHistoria = null, marcadoresHistorias = [], historiasVisibles = false;
+  function centroDe(ids) {
+    const pts = ids.map(posDe).filter(Boolean);
+    if (!pts.length) return null;
+    return [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length];
+  }
+  function ponerHistorias() {
+    marcadoresHistorias.forEach((m) => m.remove());
+    marcadoresHistorias = [];
+    if (!historiasVisibles || !pozos) return;
+    for (const h of historias) {
+      const centro = centroDe(h.pozos);
+      if (!centro) continue;
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'marcador-historia';
+      el.setAttribute('aria-haspopup', 'dialog');
+      el.setAttribute('aria-label', `Historia: ${h.titulo}`);
+      el.innerHTML = `<span class="mh-punto" aria-hidden="true"></span><span class="mh-etiqueta" aria-hidden="true">${esc(h.rotulo || h.titulo)}</span>`;
+      el.addEventListener('click', (ev) => { ev.stopPropagation(); alElegirHistoria?.(h.id); });
+      marcadoresHistorias.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(centro).addTo(map));
+    }
+  }
+
   // ---- tooltip al pasar el mouse (solo con mouse: en pantallas táctiles está la ficha) ----
   const conMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const tip = document.createElement('div');
@@ -520,6 +547,28 @@ export function crearMapa({ onClickPozo }) {
   const oyentes = new Set();
   const avisar = () => oyentes.forEach((fn) => fn(estado));
 
+  function volar(vista, opciones = {}) {
+    // El padding siempre se pasa explícito: MapLibre lo conserva entre vuelos si no.
+    const destino = { ...vista, duration: 1600, essential: true, padding: { top: 0, bottom: 0, left: 0, right: 0 }, ...opciones };
+    if (movimientoReducido()) map.jumpTo(destino); // "reducir movimiento": sin vuelos de cámara
+    else map.flyTo(destino);
+  }
+  // Encuadra una lista de pozos (con margen para la tarjeta y la leyenda). Si los pozos todavía no llegaron,
+  // vuela a la vista de respaldo y encuadra cuando lleguen.
+  let encuadrePendiente = null;
+  function encuadrar(ids, { respaldo, padding, zoomMax = 15 } = {}) {
+    encuadrePendiente = null;
+    const pts = ids.map(posDe).filter(Boolean);
+    if (!pts.length) {
+      if (!pozos) encuadrePendiente = [ids, { padding, zoomMax }];
+      if (respaldo) volar(respaldo);
+      return;
+    }
+    const lons = pts.map((p) => p[0]), lats = pts.map((p) => p[1]);
+    const camara = map.cameraForBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding, maxZoom: zoomMax });
+    if (camara) volar({ center: camara.center, zoom: camara.zoom });
+  }
+
   // ---- API que usan story.js y explore.js ----
   return {
     map,
@@ -562,6 +611,7 @@ export function crearMapa({ onClickPozo }) {
       visibles = recalcularFiltro();
       armarDatos();
       if (partes.pozos && marcadorPendiente) mostrarMarcador(marcadorPendiente.id, marcadorPendiente.etiqueta);
+      if (partes.pozos) { ponerHistorias(); if (encuadrePendiente) encuadrar(...encuadrePendiente); }
       if ((partes.pozos || partes.pais) && estado.pozos) fundirEntrada(); // los puntos aparecen con fundido
       else render();
       avisar();
@@ -583,12 +633,12 @@ export function crearMapa({ onClickPozo }) {
       return visibles;
     },
     marcador: mostrarMarcador,
-    volar(vista, opciones = {}) {
-      // El padding siempre se pasa explícito: MapLibre lo conserva entre vuelos si no.
-      const destino = { ...vista, duration: 1600, essential: true, padding: { top: 0, bottom: 0, left: 0, right: 0 }, ...opciones };
-      if (movimientoReducido()) map.jumpTo(destino); // "reducir movimiento": sin vuelos de cámara
-      else map.flyTo(destino);
-    },
+    volar,
+    encuadrar,
+    /** Registra las historias del paso 7 ({ id, titulo, rotulo, pozos: [idpozo] }) y qué hacer al elegir una. */
+    historias(lista, alElegir) { historias = lista; alElegirHistoria = alElegir; ponerHistorias(); },
+    /** Muestra u oculta los marcadores de las historias. */
+    mostrarHistorias(on) { if (historiasVisibles !== on) { historiasVisibles = on; ponerHistorias(); } },
     filaDe(id) { return pozos?.filaPorId.get(id); },
     coordsDe(id) { return posDe(id); },
     habilitarExploracion(on) {

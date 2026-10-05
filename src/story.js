@@ -5,28 +5,8 @@
 import scrollama from 'scrollama';
 import { fmt, dec, esc } from './data.js';
 import { dibujarProduccion } from './chart.js';
-
-// Fuentes con enlace oficial (verificadas en docs/investigacion-contexto.md y docs/formulario.md).
-// Una fuente sin enlace se escribe como texto suelto.
-const F = {
-  capIV: { t: 'Secretaría de Energía, Capítulo IV – Pozos', url: 'http://datos.energia.gob.ar/dataset/c846e79c-026c-4040-897f-1ad3543b407c' },
-  mecon: { t: 'Ministerio de Economía', url: 'https://www.argentina.gob.ar/noticias/13-de-diciembre-descubrimiento-de-petroleo-en-comodoro-rivadavia' },
-  ley24799: { t: 'Ley 24.799', url: 'https://www.argentina.gob.ar/normativa/nacional/ley-24799-42613/texto' },
-  res596: { t: 'Resolución SE 5/96 (InfoLeg)', url: 'https://servicios.infoleg.gob.ar/infolegInternet/anexos/30000-34999/31996/norma.htm' },
-  ypf20f: { t: 'YPF, Form 20-F 2024, Nota 17 (SEC)', url: 'https://www.sec.gov/Archives/edgar/data/904851/000119312525067155/d866694d20f.htm' },
-  ypf6k: { t: 'YPF, Form 6-K (SEC, 19/2/2026)', url: 'https://www.sec.gov/Archives/edgar/data/904851/000119312526057719/d47643d6k.htm' },
-  muniCH679: { t: 'Municipalidad de Comodoro Rivadavia, 27/8/2024', url: 'https://www.comodoro.gov.ar/2024/08/27/el-municipio-intervino-ante-un-nuevo-derrame-de-petroleo-en-un-yacimiento-ypf/' },
-  censo: { t: 'Censo 2022', url: 'https://www.comodoro.gov.ar/miciudad/2025/10/13/censo-nacional-de-poblacion-hogares-y-viviendas-2022/' },
-  indecEPH: { t: 'INDEC, EPH', url: 'https://www.indec.gob.ar/uploads/informesdeprensa/mercado_trabajo_eph_2trim26433FCBC5A8.pdf' },
-  // crédito de la foto del paso 8 (uso autorizado; ver docs/investigacion-contexto.md)
-  mauroEsains: { t: 'Mauro Esains', url: 'https://www.instagram.com/mauroesains/' },
-};
-
-/** Arma el HTML de una línea de fuentes: partes de texto o {t, url} (se abren en otra pestaña). */
-export function htmlFuente(partes) {
-  return partes.map((p) => (typeof p === 'string' ? esc(p)
-    : `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.t)}<svg class="icono-externo" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M4 1H1v8h8V6M6 1h3v3M9 1 4.5 5.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg><span class="sr-only"> (abre en otra pestaña)</span></a>`)).join('; ');
-}
+import { F, htmlFuente } from './fuentes.js';
+import { HISTORIAS, POZOS_HISTORIAS, abrirHistoria, cerrarHistoria, conectarHistorias } from './historias.js';
 
 /** Proporción en palabras ("Casi dos de cada tres") calculada desde el dato; si no hay una fracción
  *  simple cerca, el porcentaje con coma decimal. */
@@ -100,11 +80,9 @@ export function textoPortada(R) {
 export function definirPasos(R) {
   const c = R.cuenca, e = R.ejido, p = R.poblacion, pr = R.produccion, k = R.km3.en_ejido;
   const t = R.trayectoria; // null si no se procesó el mensual
-  const radio = (p.radio_urbano_mas_pozos || p.radio_mas_pozos)[0];
   const B = R.barrios; // null si no hay capa de barrios
   const topBarrios = B ? B.por_barrio.slice(0, 3) : [];
   const barrioSinActivos = B ? B.por_barrio.find((b) => b.activos === 0 && b.pozos >= 100) : null;
-  const ch679 = R.casos?.ch679 || null; // el pozo de la surgencia de 2024, si se encontró su sigla en el registro
   const sinConcesion = R.concesiones?.pozos_en_area_sin_concesion;
   // Operadoras que hoy tienen los pozos que el listado anterior asignaba a YPF (las cinco con más pozos).
   const exYpf = c.ex_ypf_por_operadora_actual
@@ -205,13 +183,18 @@ export function definirPasos(R) {
       capas: { ...base, soloEjido: true, limites: true, barrios: true },
     },
     {
-      // Si el CH-679 está en el registro, se marca con un anillo y la vista se abre un poco para que entre.
-      id: 7, kicker: 'Paso 7 · Un radio censal', cifra: fmt(radio.pozos),
-      titulo: `pozos en un radio censal donde viven ${fmt(radio.pobl)} personas`,
-      texto: `${B?.barrio_del_radio_urbano_mas_pozos ? `Barrio ${B.barrio_del_radio_urbano_mas_pozos}. ` : ''}Es el radio censal urbano con más pozos de la ciudad: ${fmt(radio.abandonados)} abandonados y ${fmt(radio.activos)} activos. En agosto de 2024 el municipio intervino por la surgencia del pozo abandonado CH-679, en el Yacimiento Central, que afectó el arroyo Belgrano${ch679 ? ' (en el mapa, con un anillo)' : ''}.`,
-      fuente: [F.censo, F.muniCH679],
-      vista: { center: [radio.lon ?? -67.50, radio.lat ?? -45.83], zoom: ch679 ? 14 : 14.5 },
-      capas: { ...base, soloEjido: true, poblacion: true, barrios: true, resaltado: ch679?.idpozo ?? null, resaltadoEtiqueta: ch679 ? 'CH-679' : null },
+      // Convivir con los pozos (01/10, reemplaza a "Un radio censal"): historias de vecinos que viven al lado de
+      // pozos, contadas por la prensa local y el municipio. Las historias (textos, pozos y fuentes) están en
+      // src/historias.js; acá van solo la tarjeta y los botones para abrirlas. TEXTO PROVISORIO: lo revisa Aldana.
+      id: 7, kicker: 'Paso 7 · Convivir con los pozos', cifra: B ? fmt(B.pozos_en_barrios) : '',
+      titulo: 'pozos dentro de barrios de Comodoro Rivadavia',
+      texto: 'Detrás de los puntos del mapa hay vecinos. Algunos supieron que vivían al lado de un pozo por un olor a gas, un derrame, un derrumbe o al cavar en el patio. Estas son algunas de esas historias, contadas por la prensa local y el municipio. Elegí una en el mapa o en esta lista:',
+      historias: HISTORIAS,
+      fuente: [F.capIV, 'Municipalidad de Comodoro Rivadavia, barrios', 'prensa local y municipio (en cada historia)'],
+      // Encuadre: todos los pozos de las historias; la vista fija es el respaldo si los pozos no llegaron todavía.
+      encuadre: POZOS_HISTORIAS,
+      vista: { center: [-67.515, -45.851], zoom: 11.6 },
+      capas: { ...base, soloEjido: true, barrios: true, limites: true, resaltado: POZOS_HISTORIAS },
     },
     {
       id: 8, kicker: 'Paso 8 · Lo que queda', cifra: fmt(c.sin_produccion),
@@ -229,6 +212,13 @@ export function definirPasos(R) {
 // Vista con la que arranca el visualizador (la cuenca entera, como el paso 8).
 const VISTA_EXPLORAR = { center: [-68.3, -46.2], zoom: 7 };
 const FLECHA = '<svg class="empezar-flecha" width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1 L7 14 M1.5 8.5 L7 14 L12.5 8.5"/></svg>';
+
+/** Margen para encuadrar pozos sin que los tape la tarjeta (a la izquierda en compu, abajo en celular) ni la leyenda. */
+export function margenTarjeta() {
+  return window.matchMedia('(max-width: 700px)').matches
+    ? { top: 70, bottom: Math.round(window.innerHeight * 0.55), left: 30, right: 30 }
+    : { top: 150, bottom: 60, left: 500, right: 80 };
+}
 
 /** Lleva a una sección (con desplazamiento suave, salvo "reducir movimiento") y le pasa el foco. */
 export function irA(id) {
@@ -255,6 +245,7 @@ export function crearTarjetas({ pasos, produccion }) {
         <p class="kicker">${s.kicker}</p>
         <h2 class="titulo-paso" id="titulo-paso-${s.id}"><span class="cifra">${s.cifra}</span> ${s.titulo}</h2>
         <p class="texto">${s.texto}</p>
+        ${s.historias ? `<ul class="lista-historias">${s.historias.map((h) => `<li><button type="button" class="historia-btn" data-historia="${h.id}" aria-haspopup="dialog">${esc(h.titulo)}</button></li>`).join('')}</ul>` : ''}
         ${s.grafico ? '<div class="grafico" id="grafico-cuencas"></div>' : ''}
         ${s.boton ? `<a class="empezar boton-paso" href="#${s.boton.destino}" data-destino="${s.boton.destino}">${s.boton.texto} ${FLECHA}</a>` : ''}
         <p class="fuente">Fuente: ${htmlFuente(s.fuente)}</p>
@@ -263,6 +254,7 @@ export function crearTarjetas({ pasos, produccion }) {
   }
   if (produccion) dibujarProduccion(document.getElementById('grafico-cuencas'), produccion);
   cont.querySelectorAll('.boton-paso').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); irA(a.dataset.destino); }));
+  cont.querySelectorAll('.historia-btn').forEach((b) => b.addEventListener('click', () => abrirHistoria(b.dataset.historia)));
 }
 
 /** Conecta scrollama con el mapa (cuando el mapa ya existe). Al conectarse aplica el paso en pantalla.
@@ -270,12 +262,17 @@ export function crearTarjetas({ pasos, produccion }) {
  *  visualizador (alEntrarExplorar) y al volver a cualquier paso del relato se cierra (alSalirExplorar). */
 export function conectarRecorrido({ pasos, mapa, alEntrarExplorar, alSalirExplorar }) {
   const seccionExplorar = document.getElementById('explorar');
+  // Historias del paso 7: marcadores en el mapa y, al cerrar una, se vuelve al encuadre de todas.
+  conectarHistorias({ mapa, margen: margenTarjeta, alCerrar: () => mapa.encuadrar(POZOS_HISTORIAS, { padding: margenTarjeta() }) });
   let explorando = false;
   const scroller = scrollama();
   scroller
     .setup({ step: '#story .step', offset: 0.55, progress: false })
     .onStepEnter(({ element }) => {
       document.querySelectorAll('#story .step').forEach((el) => el.classList.toggle('activa', el === element));
+      const paso = pasos.find((p) => p.id === Number(element.dataset.step));
+      cerrarHistoria({ volver: false }); // al cambiar de paso, la ventana de una historia no queda abierta
+      mapa.mostrarHistorias(Boolean(paso?.historias));
       if (element === seccionExplorar) {
         // Visualizador. Si ya estaba abierto (volvió de la metodología, o scrollama re-dispara al cambiar el alto
         // de la ventana) no se toca nada: el mapa conserva los filtros y la vista que eligió el usuario.
@@ -287,7 +284,6 @@ export function conectarRecorrido({ pasos, mapa, alEntrarExplorar, alSalirExplor
         return;
       }
       if (explorando) { explorando = false; alSalirExplorar?.(); } // volvió al relato: se cierra el visualizador
-      const paso = pasos.find((p) => p.id === Number(element.dataset.step));
       if (!paso) { // portada: el país, sin ningún pozo
         mapa.marcador(null);
         document.body.classList.add('sin-leyenda'); // sin pozos en el mapa, la leyenda no tiene qué explicar
@@ -298,6 +294,7 @@ export function conectarRecorrido({ pasos, mapa, alEntrarExplorar, alSalirExplor
       mapa.aplicar({ soloId: null, pozos: true, ...paso.capas });
       document.body.classList.toggle('sin-leyenda', Boolean(paso.capas.soloId)); // un solo pozo: la leyenda cuenta 44.390
       mapa.marcador(paso.marcador?.idpozo ?? null, paso.marcador?.etiqueta);
+      if (paso.encuadre) { mapa.encuadrar(paso.encuadre, { respaldo: paso.vista, padding: margenTarjeta() }); return; }
       const movil = window.matchMedia('(max-width: 700px)').matches;
       const padding = paso.pozoArriba && movil ? { top: 0, bottom: Math.round(window.innerHeight * 0.45), left: 0, right: 0 } : undefined;
       mapa.volar(paso.vista, { ...(paso.vuelo || {}), ...(padding ? { padding } : {}) });
