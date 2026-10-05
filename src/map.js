@@ -467,7 +467,7 @@ export function crearMapa({ onClickPozo }) {
       if (!centro) continue;
       const el = document.createElement('button');
       el.type = 'button';
-      el.className = 'marcador-historia';
+      el.className = `marcador-historia${h.rotuloLado === 'izquierda' ? ' rotulo-izq' : ''}`;
       el.dataset.historia = h.id;
       el.setAttribute('aria-haspopup', 'dialog');
       el.setAttribute('aria-label', `Historia: ${h.titulo}`);

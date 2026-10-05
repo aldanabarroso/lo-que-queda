@@ -95,7 +95,10 @@ body.error-pozos #cargando { display: block; border: 1.5px solid var(--a-abandon
    derecha. Adentro, el ícono de la historia; el borde lleva el color del estado declarado (inline, desde map.js). */
 .marcador-historia { position: relative; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: none; font: inherit; cursor: pointer; }
 .mh-punto { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #fffcf6; border: 2.5px solid var(--texto); color: var(--texto); box-shadow: 0 2px 8px rgba(0,0,0,.22); transition: background .15s, color .15s; }
-.mh-etiqueta { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); padding: 3px 9px; background: var(--tarjeta); border-radius: 4px; font-size: 13px; font-weight: 600; color: var(--texto); white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.14); }
+.mh-etiqueta { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); padding: 3px 9px; background: #fffcf6; border-radius: 4px; font-size: 13px; font-weight: 600; color: var(--texto); white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.marcador-historia.rotulo-izq .mh-etiqueta { left: auto; right: 40px; } /* rótulo a la izquierda si a la derecha choca con otro */
+/* Los marcadores (HTML) van por encima de la capa de pozos de deck.gl, que se dibuja en un lienzo posterior. */
+.maplibregl-marker { z-index: 1; }
 .marcador-historia:hover .mh-etiqueta, .marcador-historia:focus-visible .mh-etiqueta,
 .marcador-historia.activa .mh-etiqueta { background: var(--texto); color: var(--fondo); }
 .marcador-historia:hover .mh-punto, .marcador-historia.activa .mh-punto { background: var(--texto); color: var(--fondo); }

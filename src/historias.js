@@ -92,6 +92,7 @@ export const HISTORIAS = [
     foto: { nombre: 'derrame-laprida', credito: 'Municipalidad de Comodoro Rivadavia', url: N.muni20240827.url, alt: 'Vista aérea de un curso de agua con manchas de hidrocarburo, entre arbustos y tierra' },
     titulo: 'La surgencia del CH-679',
     rotulo: 'Surgencia en Laprida',
+    rotuloLado: 'izquierda', // a la derecha choca con "Petróleo en el patio" (los dos pozos están casi a la misma altura)
     icono: 'agua',
     pozos: [121621], // YPF.Ch.-679
     relacion: 'fuente',
