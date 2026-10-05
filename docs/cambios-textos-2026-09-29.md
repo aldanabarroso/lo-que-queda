@@ -109,6 +109,9 @@ Reemplaza a "Un radio censal". Todo es borrador: revisá la voz. La tarjeta est�
   municipio. Elegí una en el mapa o en esta lista:" + botones con las cinco historias.
 - Cada historia: 2 párrafos breves en palabras nuestras, todo atribuido ("según La Nación…"), sin nombres de
   vecinos ni calles. Lo que dice el medio (por ejemplo "no habían sido sellados") va a nombre del medio.
+- Rótulos de los marcadores (05/10, elegidos por Mariano: "lugar + hecho"): Gas en la Escuela 169 · Crudo en
+  Bella Vista · Un pozo bajo el piso · Petróleo en el patio · Surgencia en Laprida. Cada marcador tiene un ícono
+  (escuela, gota, casa con el piso partido, brote, agua) y el borde en el color del estado declarado del pozo.
 - Fotos de las historias (05/10): textos alternativos provisorios en `src/historias.js` (`foto.alt`): escuela
   "Cartel de la Escuela Provincial N° 169 Estrella de Mar, del barrio Stella Maris, frente al edificio de la
   escuela"; Bella Vista "Crudo derramado entre pastizales y tierra removida; al fondo, casas y una camioneta";

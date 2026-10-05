@@ -471,7 +471,10 @@ export function crearMapa({ onClickPozo }) {
       el.dataset.historia = h.id;
       el.setAttribute('aria-haspopup', 'dialog');
       el.setAttribute('aria-label', `Historia: ${h.titulo}`);
-      el.innerHTML = `<span class="mh-punto" aria-hidden="true"></span><span class="mh-etiqueta" aria-hidden="true">${esc(h.rotulo || h.titulo)}</span>`;
+      // borde = color del estado declarado de sus pozos (si no comparten estado, el color del texto)
+      const estados = new Set(h.pozos.map((id) => pozos.filaPorId.get(id)).filter((i) => i !== undefined).map((i) => pozos.cols.estado_cod[i]));
+      const borde = estados.size === 1 ? ESTADOS[[...estados][0]].hex : PALETA.texto;
+      el.innerHTML = `<span class="mh-punto" aria-hidden="true" style="border-color:${borde}">${h.svg || ''}</span><span class="mh-etiqueta" aria-hidden="true">${esc(h.rotulo || h.titulo)}</span>`;
       el.addEventListener('click', (ev) => { ev.stopPropagation(); alElegirHistoria?.(h.id); });
       marcadoresHistorias.push(new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat(centro).addTo(map));
     }

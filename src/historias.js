@@ -31,7 +31,8 @@ export const HISTORIAS = [
     id: 'escuela-169',
     foto: { nombre: 'escuela', credito: 'El Patagónico', url: N.patagonico2015.url, alt: 'Cartel de la Escuela Provincial N° 169 Estrella de Mar, del barrio Stella Maris, frente al edificio de la escuela' },
     titulo: 'La Escuela N° 169',
-    rotulo: 'Escuela 169',
+    rotulo: 'Gas en la Escuela 169',
+    icono: 'escuela',
     pozos: [92810, 92730, 70082], // R-87, R-88, S/L-564
     relacion: 'autores',
     fecha: '2001–2002',
@@ -45,7 +46,8 @@ export const HISTORIAS = [
     id: 'bella-vista',
     foto: { nombre: 'bella-vista', credito: 'Municipalidad de Comodoro Rivadavia', url: N.muni20240625.url, alt: 'Crudo derramado entre pastizales y tierra removida; al fondo, casas y una camioneta' },
     titulo: 'Un derrame en Bella Vista Sur',
-    rotulo: 'Bella Vista Sur',
+    rotulo: 'Crudo en Bella Vista',
+    icono: 'gota',
     pozos: [161850], // YPF.Ch.BV-577(d)
     relacion: 'fuente',
     fecha: '25 de junio de 2024',
@@ -59,7 +61,8 @@ export const HISTORIAS = [
     id: 'casa-325',
     foto: { nombre: 'pozo-sismografica', credito: 'video de un vecino, publicado por Diario Jornada', url: N.jornada20260121.url, alt: 'La boca de un pozo entre los escombros del piso roto de una casa' },
     titulo: 'Un pozo dentro de una casa',
-    rotulo: 'Una casa',
+    rotulo: 'Un pozo bajo el piso',
+    icono: 'casa',
     pozos: [121326], // YPF.Ch.-325
     relacion: 'autores',
     fecha: 'enero de 2026',
@@ -73,7 +76,8 @@ export const HISTORIAS = [
     id: 'patio-724',
     foto: { nombre: 'pozo-arbol', credito: 'ADNSur', url: N.adnsur20260227.url, alt: 'Petróleo aflorando en un hueco de tierra, junto a un borde de cemento' },
     titulo: 'Petróleo en un patio',
-    rotulo: 'Un patio',
+    rotulo: 'Petróleo en el patio',
+    icono: 'brote',
     pozos: [121660], // YPF.Ch.-724
     relacion: 'autores',
     fecha: 'febrero de 2026',
@@ -87,7 +91,8 @@ export const HISTORIAS = [
     id: 'ch-679',
     foto: { nombre: 'derrame-laprida', credito: 'Municipalidad de Comodoro Rivadavia', url: N.muni20240827.url, alt: 'Vista aérea de un curso de agua con manchas de hidrocarburo, entre arbustos y tierra' },
     titulo: 'La surgencia del CH-679',
-    rotulo: 'CH-679',
+    rotulo: 'Surgencia en Laprida',
+    icono: 'agua',
     pozos: [121621], // YPF.Ch.-679
     relacion: 'fuente',
     fecha: '25 de agosto de 2024',
@@ -98,6 +103,19 @@ export const HISTORIAS = [
     fuentes: [N.muni20240827],
   },
 ];
+
+// Íconos de los marcadores (trazo, en el color del texto; el borde del círculo lleva el color del estado
+// declarado del pozo, como el marcador del Pozo N° 2). Dibujados a mano en SVG, viewBox 16 × 16.
+const ICONOS = {
+  escuela: 'M2 14.5h12M3 14.5V7.5L8 4.5l5 3v7M6.5 14.5v-3.5h3v3.5M8 4.5V1.5l2.6.8L8 3.1', // edificio con bandera
+  gota: 'M8 1.8C8 1.8 3.6 7 3.6 10.1a4.4 4.4 0 0 0 8.8 0C12.4 7 8 1.8 8 1.8z', // gota de crudo
+  casa: 'M2 8l6-5.5L14 8M3.5 6.8v7.7h9V6.8M8.4 14.5l-1.2-2.4 1.8-1.6-1.1-2', // casa con el piso partido
+  brote: 'M8 14.5V7M8 9.2C8 6.6 5.8 5.3 3.2 5.3c0 2.4 2 3.9 4.8 3.9M8 7.6c0-2.6 2-4.3 4.8-4.3 0 2.9-2 4.3-4.8 4.3M4.5 14.5h7', // brote (cavaba para plantar un árbol)
+  agua: 'M1.5 6.2c2-1.5 3.5 1.5 6.5 0s4.5 1.5 6.5 0M1.5 10.2c2-1.5 3.5 1.5 6.5 0s4.5 1.5 6.5 0', // arroyo
+};
+const svgIcono = (nombre) => (ICONOS[nombre]
+  ? `<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICONOS[nombre]}"/></svg>`
+  : '');
 
 /** Todas las fuentes de las historias, sin repetir (para Metodología). */
 export const FUENTES_HISTORIAS = Object.values(N);
@@ -112,7 +130,7 @@ let abierta = null, focoPrevio = null, pedido = 0;
 /** Conecta las historias con el mapa: marcadores en el paso 7 y vuelo a los pozos al abrir una. */
 export function conectarHistorias({ mapa: m, margen: fnMargen, alCerrar: fnCerrar }) {
   mapa = m; margen = fnMargen; alCerrar = fnCerrar;
-  mapa.historias(HISTORIAS, abrirHistoria);
+  mapa.historias(HISTORIAS.map((h) => ({ ...h, svg: svgIcono(h.icono) })), abrirHistoria);
 }
 
 function dialogo() {

@@ -217,8 +217,8 @@ const FLECHA = '<svg class="empezar-flecha" width="14" height="16" viewBox="0 0 
  *  leyenda (arriba a la derecha). A la derecha queda lugar para los rótulos de los marcadores. */
 export function margenTarjeta() {
   return window.matchMedia('(max-width: 700px)').matches
-    ? { top: 150, bottom: Math.round(window.innerHeight * 0.55), left: 30, right: 110 }
-    : { top: 200, bottom: 70, left: 500, right: 170 };
+    ? { top: 150, bottom: Math.round(window.innerHeight * 0.55), left: 30, right: 150 }
+    : { top: 200, bottom: 70, left: 500, right: 220 };
 }
 /** Margen con la ventana de una historia abierta (a la derecha en compu, abajo en celular). */
 export function margenHistoria() {
