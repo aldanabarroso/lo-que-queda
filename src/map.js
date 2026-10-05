@@ -468,6 +468,7 @@ export function crearMapa({ onClickPozo }) {
       const el = document.createElement('button');
       el.type = 'button';
       el.className = 'marcador-historia';
+      el.dataset.historia = h.id;
       el.setAttribute('aria-haspopup', 'dialog');
       el.setAttribute('aria-label', `Historia: ${h.titulo}`);
       el.innerHTML = `<span class="mh-punto" aria-hidden="true"></span><span class="mh-etiqueta" aria-hidden="true">${esc(h.rotulo || h.titulo)}</span>`;

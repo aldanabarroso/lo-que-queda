@@ -4,7 +4,8 @@ Uso (desde la raíz del proyecto):
     py -3.12 -m pip install pillow        # una vez
     py -3.12 scripts/fotos_a_webp.py      # en Windows; en otros sistemas: python scripts/fotos_a_webp.py
 
-Qué hace con cada .jpg / .jpeg / .png de fotos-originales/:
+Qué hace con cada .jpg / .jpeg / .png / .avif / .webp de fotos-originales/ (y de sus subcarpetas, que se
+copian igual en public/img/: fotos-originales/historias/x.jpg → public/img/historias/x.webp):
 - respeta la orientación de la cámara (EXIF) y achica a 800 px de ancho como máximo: en la tarjeta la foto
   se ve a 400 px, así que 800 alcanza para pantallas de alta densidad. Nunca agranda.
 - guarda public/img/<mismo nombre>.webp con calidad 80. No copia los metadatos (EXIF, GPS): solo el perfil
@@ -32,7 +33,8 @@ def convertir(origen: Path) -> tuple[int, int, tuple[int, int]]:
         if im.width > ANCHO_MAX:
             alto = round(im.height * ANCHO_MAX / im.width)
             im = im.resize((ANCHO_MAX, alto), Image.LANCZOS)
-        destino = DESTINO / f"{origen.stem}.webp"
+        destino = DESTINO / origen.relative_to(ORIGINALES).with_suffix(".webp")
+        destino.parent.mkdir(parents=True, exist_ok=True)
         opciones = {"quality": CALIDAD, "method": 6}
         if icc:
             opciones["icc_profile"] = icc
@@ -42,7 +44,7 @@ def convertir(origen: Path) -> tuple[int, int, tuple[int, int]]:
 
 def main() -> None:
     DESTINO.mkdir(parents=True, exist_ok=True)
-    fotos = sorted(p for p in ORIGINALES.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png"))
+    fotos = sorted(p for p in ORIGINALES.rglob("*") if p.is_file() and p.suffix.lower() in (".jpg", ".jpeg", ".png", ".avif", ".webp"))
     if not fotos:
         print(f"No hay fotos en {ORIGINALES}")
         return
@@ -51,9 +53,10 @@ def main() -> None:
         antes, despues, (ancho, alto) = convertir(p)
         total_antes += antes
         total_despues += despues
-        print(f"{p.name:18} {antes / 1024:6.0f} KB -> {p.stem}.webp {despues / 1024:5.0f} KB  ({ancho}x{alto}, "
+        nombre = p.relative_to(ORIGINALES).as_posix()
+        print(f"{nombre:32} {antes / 1024:6.0f} KB -> .webp {despues / 1024:5.0f} KB  ({ancho}x{alto}, "
               f"{100 * (1 - despues / antes):.0f} % menos)")
-    print(f"{'Total':18} {total_antes / 1024:6.0f} KB -> {total_despues / 1024:5.0f} KB  "
+    print(f"{'Total':32} {total_antes / 1024:6.0f} KB -> {total_despues / 1024:5.0f} KB  "
           f"({100 * (1 - total_despues / total_antes):.0f} % menos)")
 
 

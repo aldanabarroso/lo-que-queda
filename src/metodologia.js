@@ -545,6 +545,8 @@ function creditos() {
         <li><strong>Fotos de la portada y de los pasos 3, 4, 5 y 6</strong>: tomadas por los autores. Son
           fotografías, no imágenes generadas con inteligencia artificial.</li>
         <li><strong>Foto del paso 8</strong>: ${enlace(ENLACES.mauroEsains, 'Mauro Esains')}. Se usa con autorización.</li>
+        <li><strong>Fotos de las historias del paso 7</strong>, con crédito a su fuente: ${HISTORIAS.filter((h) => h.foto)
+          .map((h) => `${esc(h.titulo)}, ${htmlFuente([{ t: h.foto.credito, url: h.foto.url }])}`).join('; ')}.</li>
         <li><strong>Bibliotecas de código abierto</strong>: ${enlace(ENLACES.maplibre, 'MapLibre GL JS')}
           (BSD-3-Clause), ${enlace(ENLACES.deck, 'deck.gl')} (MIT), ${enlace(ENLACES.d3, 'D3')} (ISC) y
           ${enlace(ENLACES.scrollama, 'Scrollama')} (MIT). La web se compila con ${enlace(ENLACES.vite, 'Vite')} (MIT).</li>

@@ -91,22 +91,44 @@ body.error-pozos #cargando { display: block; border: 1.5px solid var(--a-abandon
 .error { border-left: 4px solid var(--a-abandonar); }
 
 /* ---- paso 7, "Convivir con los pozos": marcadores de historia, botones de la tarjeta y ventana ---- */
-.marcador-historia { display: flex; align-items: center; gap: 6px; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
-.mh-punto { width: 18px; height: 18px; border-radius: 50%; background: var(--texto); border: 3px solid #fffcf6; box-shadow: 0 0 0 1.5px var(--texto), 0 2px 8px rgba(0,0,0,.25); flex-shrink: 0; }
-.mh-etiqueta { padding: 3px 9px; background: var(--tarjeta); border-radius: 4px; font-size: 13px; font-weight: 600; color: var(--texto); white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.14); }
-.marcador-historia:hover .mh-etiqueta, .marcador-historia:focus-visible .mh-etiqueta { background: var(--texto); color: var(--fondo); }
+/* El botón mide lo mismo que el punto, así MapLibre lo centra justo sobre el pozo; el rótulo cuelga a la derecha. */
+.marcador-historia { position: relative; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: none; font: inherit; cursor: pointer; }
+.mh-punto { position: absolute; inset: 0; border-radius: 50%; background: var(--texto); border: 3px solid #fffcf6; box-shadow: 0 0 0 1.5px var(--texto), 0 2px 8px rgba(0,0,0,.25); }
+.mh-etiqueta { position: absolute; left: 26px; top: 50%; transform: translateY(-50%); padding: 3px 9px; background: var(--tarjeta); border-radius: 4px; font-size: 13px; font-weight: 600; color: var(--texto); white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.14); }
+.marcador-historia:hover .mh-etiqueta, .marcador-historia:focus-visible .mh-etiqueta,
+.marcador-historia.activa .mh-etiqueta { background: var(--texto); color: var(--fondo); }
+.marcador-historia.activa .mh-punto { box-shadow: 0 0 0 1.5px var(--texto), 0 0 0 7px rgba(23,24,27,.16), 0 2px 8px rgba(0,0,0,.25); }
 .lista-historias { list-style: none; margin: -4px 0 12px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.historia-btn { min-height: 36px; padding: 6px 12px; font: inherit; font-size: 14px; color: var(--texto); background: transparent; border: 1.5px solid var(--texto); border-radius: 999px; cursor: pointer; }
-.historia-btn:hover { background: var(--texto); color: var(--fondo); }
-#historia { position: fixed; right: 16px; bottom: 16px; z-index: 5; width: 390px; max-width: calc(100vw - 32px); max-height: calc(100vh - 180px); overflow: auto; background: var(--tarjeta); border-radius: 6px; padding: 18px 22px; box-shadow: 0 8px 30px rgba(0,0,0,.18); font-size: 15.5px; }
-#historia .cerrar { position: absolute; right: 8px; top: 6px; width: 44px; height: 44px; border: 0; background: none; font-size: 22px; cursor: pointer; color: var(--texto-sec); }
+.historia-btn { min-height: 36px; padding: 6px 12px; font: inherit; font-size: 14px; color: var(--texto); background: transparent; border: 1.5px solid var(--texto); border-radius: 999px; cursor: pointer; transition: background .15s, color .15s; }
+.historia-btn:hover, .historia-btn.activa { background: var(--texto); color: var(--fondo); }
+
+/* tarjeta flotante de la historia (abajo a la derecha; la leyenda queda visible arriba) */
+#historia { position: fixed; right: 16px; bottom: 16px; z-index: 5; width: 340px; max-width: calc(100vw - 32px); max-height: calc(100vh - 190px); overflow: auto; background: #fffcf6; border-radius: 8px; box-shadow: 0 10px 34px rgba(0,0,0,.22); font-size: 15px; line-height: 1.5; }
+.historia-foto { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; background: var(--urbano); }
+.historia-cuerpo { padding: 12px 18px 12px; }
+.historia-cabeza { display: flex; align-items: center; justify-content: space-between; margin: 0 0 2px; }
+.historia-cabeza .kicker { margin: 0; }
+#historia .cerrar { width: 36px; height: 36px; margin: -6px -10px -6px 0; border: 0; border-radius: 50%; background: none; font-size: 22px; line-height: 1; cursor: pointer; color: var(--texto-sec); }
+#historia .cerrar:hover { background: var(--urbano); color: var(--texto); }
 #historia p { margin: 0 0 10px; }
-#historia .kicker { margin-right: 40px; }
-.historia-titulo { margin: 0 40px 4px 0; font-family: var(--serif); font-size: 22px; font-weight: 600; line-height: 1.2; }
-#historia .historia-fecha { color: var(--texto-sec); font-size: 14px; }
-#historia .historia-sub { margin: 14px 0 6px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--texto-sec); }
-.historia-pozos { list-style: none; margin: 0 0 8px; padding: 0; font-size: 14.5px; }
-.historia-pozos li { display: flex; align-items: baseline; gap: 2px; margin: 0 0 4px; }
+.historia-titulo { margin: 0 0 2px; font-family: var(--serif); font-size: 21px; font-weight: 600; line-height: 1.18; }
+#historia .historia-meta { margin: 0 0 8px; font-size: 13px; color: var(--texto-sec); }
+#historia .historia-lead { font-size: 15px; }
+.historia-mas { border-top: 1px solid var(--borde); padding-top: 10px; }
+#historia .historia-sub { margin: 12px 0 6px; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--texto-sec); }
+.historia-pozos { list-style: none; margin: 0 0 8px; padding: 0; font-size: 13.5px; line-height: 1.35; }
+.historia-pozos li { display: flex; align-items: flex-start; gap: 4px; margin: 0 0 6px; padding: 7px 10px; background: #fff; border: 1px solid #e6dfd0; border-radius: 6px; }
+.historia-pozos .ley-dot { margin-top: 4px; }
+.historia-estado { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 999px; background: #eceae6; color: #3f4147; font-size: 12px; }
+.historia-op { color: var(--texto-sec); font-size: 12.5px; }
+#historia .historia-nota, #historia .historia-fuentes { font-size: 12.5px; color: var(--texto-sec); line-height: 1.45; }
+.historia-leer { display: block; width: 100%; margin: 2px 0 10px; padding: 8px 10px; font: inherit; font-size: 14px; font-weight: 600; color: var(--texto); background: none; border: 1.5px solid var(--texto); border-radius: 4px; cursor: pointer; text-align: center; }
+.historia-leer:hover { background: var(--texto); color: var(--fondo); }
+.historia-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid var(--borde); padding-top: 10px; }
+.historia-flecha { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; flex-shrink: 0; border: 1.5px solid var(--texto); border-radius: 4px; background: none; color: var(--texto); cursor: pointer; }
+.historia-flecha:hover { background: var(--texto); color: var(--fondo); }
+#historia .historia-credito { margin: 0; font-size: 12px; color: var(--texto-sec); text-align: center; line-height: 1.3; }
+@media (prefers-reduced-motion: reduce) { .historia-btn { transition: none; } }
 
 /* ---- leyenda compacta ---- */
 #leyenda { position: fixed; right: 16px; top: 16px; z-index: 3; min-width: 210px; background: var(--tarjeta); border-radius: 6px; padding: 10px 14px; font-size: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.12); display: flex; flex-direction: column; gap: 4px; }
@@ -194,7 +216,8 @@ input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; }
   .btn-plegar { display: inline-flex; align-items: center; margin: 0; flex-shrink: 0; }
   body.explorando .maplibregl-ctrl-bottom-right { bottom: 96px; }
   #ficha { left: 12px; right: 12px; width: auto; max-height: 70vh; }
-  #historia { left: 12px; right: 12px; bottom: 12px; width: auto; max-width: none; max-height: 72vh; padding: 16px 18px; }
+  #historia { left: 12px; right: 12px; bottom: 12px; width: auto; max-width: none; max-height: 72vh; }
+  .historia-foto { aspect-ratio: 16 / 6; }
   .mh-etiqueta { font-size: 12px; padding: 2px 7px; }
   .metodologia { padding: 6vh 16px; }
 }

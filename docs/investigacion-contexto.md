@@ -160,6 +160,12 @@ tres casos la relación la establecieron los autores (las notas no dan siglas).
 - **Surgencia del CH-679, 25/8/2024** (YPF.Ch.-679): comunicado municipal del 27/8/2024 (arriba, sección Ambiente).
   El municipio lo describe como pozo de 1927 abandonado "aparentemente" en 1962: citar siempre atribuido.
 
+Fotos de las historias (`fotos-originales/historias/`, 05/10/2026), con crédito al medio de cada nota:
+escuela → El Patagónico; bella-vista → Municipalidad de Comodoro Rivadavia (25/6/2024); derrame-laprida (CH-679)
+→ Municipalidad (27/8/2024); pozo-arbol (patio) → ADNSur; pozo-sismografica (casa) → video de un vecino publicado
+por Diario Jornada. **Pendiente: pedir el permiso de uso y guardarlo** con las demás autorizaciones; si alguno no
+lo da, esa foto se saca.
+
 ## Fotos de las tarjetas (01/10/2026)
 
 - Portada y pasos 3, 4, 5 y 6: fotos de los autores (originales en `fotos-originales/`). Crédito "Foto: los autores."

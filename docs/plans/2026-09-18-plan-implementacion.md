@@ -111,6 +111,13 @@ Marcar con [x] al terminar. Cada tarea termina con `npm run build` sin errores y
       tarjeta y ventana con resumen, datos de cada pozo del registro y fuentes (`src/historias.js`). Prensa citada
       como excepción a la regla 3 (CLAUDE.md). Textos provisorios: los revisa Aldana
       (`docs/cambios-textos-2026-09-29.md`).
+- [x] 2.22 (05/10) Ficha de historia rediseñada (opción B de los mockups: tarjeta flotante con foto): foto de cada
+      historia (`fotos-originales/historias/` → `public/img/historias/*.webp`, crédito al medio de cada nota),
+      "Historia N de 5", fecha y barrio, comienzo del texto y "Seguir leyendo" (resto, pozos como fichitas, fuentes),
+      flechas anterior/siguiente; historia activa marcada en la lista y en el mapa. Marcador corregido (el punto
+      coincide con el anillo del pozo) y encuadre del paso 7 con márgenes para la leyenda y los rótulos.
+      Pendiente: pedir y guardar el permiso de uso de las fotos de las historias (El Patagónico, Municipalidad,
+      ADNSur, Diario Jornada).
 - [x] 3.3 (29/09) Enlaces a fuentes oficiales desde las tarjetas y la portada (`F` y `htmlFuente()` en `story.js`;
       solo URLs verificadas en `docs/investigacion-contexto.md` y `docs/formulario.md`).
 - [ ] 3.4 Rendimiento: probar en una compu lenta y en Firefox/Safari; si hace falta, bajar

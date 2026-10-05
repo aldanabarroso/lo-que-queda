@@ -213,11 +213,18 @@ export function definirPasos(R) {
 const VISTA_EXPLORAR = { center: [-68.3, -46.2], zoom: 7 };
 const FLECHA = '<svg class="empezar-flecha" width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 1 L7 14 M1.5 8.5 L7 14 L12.5 8.5"/></svg>';
 
-/** Margen para encuadrar pozos sin que los tape la tarjeta (a la izquierda en compu, abajo en celular) ni la leyenda. */
+/** Margen para encuadrar pozos sin que los tape la tarjeta (a la izquierda en compu, abajo en celular) ni la
+ *  leyenda (arriba a la derecha). A la derecha queda lugar para los rótulos de los marcadores. */
 export function margenTarjeta() {
   return window.matchMedia('(max-width: 700px)').matches
-    ? { top: 70, bottom: Math.round(window.innerHeight * 0.55), left: 30, right: 30 }
-    : { top: 150, bottom: 60, left: 500, right: 80 };
+    ? { top: 150, bottom: Math.round(window.innerHeight * 0.55), left: 30, right: 110 }
+    : { top: 200, bottom: 70, left: 500, right: 170 };
+}
+/** Margen con la ventana de una historia abierta (a la derecha en compu, abajo en celular). */
+export function margenHistoria() {
+  return window.matchMedia('(max-width: 700px)').matches
+    ? { top: 60, bottom: Math.round(window.innerHeight * 0.7), left: 30, right: 30 }
+    : { top: 80, bottom: 80, left: 500, right: 440 };
 }
 
 /** Lleva a una sección (con desplazamiento suave, salvo "reducir movimiento") y le pasa el foco. */
@@ -263,7 +270,7 @@ export function crearTarjetas({ pasos, produccion }) {
 export function conectarRecorrido({ pasos, mapa, alEntrarExplorar, alSalirExplorar }) {
   const seccionExplorar = document.getElementById('explorar');
   // Historias del paso 7: marcadores en el mapa y, al cerrar una, se vuelve al encuadre de todas.
-  conectarHistorias({ mapa, margen: margenTarjeta, alCerrar: () => mapa.encuadrar(POZOS_HISTORIAS, { padding: margenTarjeta() }) });
+  conectarHistorias({ mapa, margen: margenHistoria, alCerrar: () => mapa.encuadrar(POZOS_HISTORIAS, { padding: margenTarjeta() }) });
   let explorando = false;
   const scroller = scrollama();
   scroller

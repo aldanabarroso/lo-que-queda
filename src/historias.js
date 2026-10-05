@@ -29,6 +29,7 @@ const N = {
 export const HISTORIAS = [
   {
     id: 'escuela-169',
+    foto: { nombre: 'escuela', credito: 'El Patagónico', url: N.patagonico2015.url, alt: 'Cartel de la Escuela Provincial N° 169 Estrella de Mar, del barrio Stella Maris, frente al edificio de la escuela' },
     titulo: 'La Escuela N° 169',
     rotulo: 'Escuela 169',
     pozos: [92810, 92730, 70082], // R-87, R-88, S/L-564
@@ -42,6 +43,7 @@ export const HISTORIAS = [
   },
   {
     id: 'bella-vista',
+    foto: { nombre: 'bella-vista', credito: 'Municipalidad de Comodoro Rivadavia', url: N.muni20240625.url, alt: 'Crudo derramado entre pastizales y tierra removida; al fondo, casas y una camioneta' },
     titulo: 'Un derrame en Bella Vista Sur',
     rotulo: 'Bella Vista Sur',
     pozos: [161850], // YPF.Ch.BV-577(d)
@@ -55,6 +57,7 @@ export const HISTORIAS = [
   },
   {
     id: 'casa-325',
+    foto: { nombre: 'pozo-sismografica', credito: 'video de un vecino, publicado por Diario Jornada', url: N.jornada20260121.url, alt: 'La boca de un pozo entre los escombros del piso roto de una casa' },
     titulo: 'Un pozo dentro de una casa',
     rotulo: 'Una casa',
     pozos: [121326], // YPF.Ch.-325
@@ -68,6 +71,7 @@ export const HISTORIAS = [
   },
   {
     id: 'patio-724',
+    foto: { nombre: 'pozo-arbol', credito: 'ADNSur', url: N.adnsur20260227.url, alt: 'Petróleo aflorando en un hueco de tierra, junto a un borde de cemento' },
     titulo: 'Petróleo en un patio',
     rotulo: 'Un patio',
     pozos: [121660], // YPF.Ch.-724
@@ -81,6 +85,7 @@ export const HISTORIAS = [
   },
   {
     id: 'ch-679',
+    foto: { nombre: 'derrame-laprida', credito: 'Municipalidad de Comodoro Rivadavia', url: N.muni20240827.url, alt: 'Vista aérea de un curso de agua con manchas de hidrocarburo, entre arbustos y tierra' },
     titulo: 'La surgencia del CH-679',
     rotulo: 'CH-679',
     pozos: [121621], // YPF.Ch.-679
@@ -119,39 +124,83 @@ function dialogo() {
   return el;
 }
 
-export async function abrirHistoria(id) {
-  const h = HISTORIAS.find((x) => x.id === id);
-  if (!h) return;
+// Tarjeta flotante (abajo a la derecha; en celular, hoja desde abajo): foto, título, fecha y el comienzo del
+// texto; "Seguir leyendo" despliega el resto, los pozos y las fuentes. Flechas para pasar de historia.
+const flecha = (dir) => `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${dir < 0 ? 'M10 3 L5 8 L10 13' : 'M6 3 L11 8 L6 13'}"/></svg>`;
+
+export async function abrirHistoria(id, { desplegada = false } = {}) {
+  const i = HISTORIAS.findIndex((x) => x.id === id);
+  if (i < 0) return;
+  const h = HISTORIAS[i];
   const el = dialogo();
   const este = ++pedido;
   if (!abierta) focoPrevio = document.activeElement;
   abierta = h;
+  marcarActiva(h.id);
   mapa?.encuadrar(h.pozos, { padding: margen?.(), zoomMax: 15.5 });
   // los datos de cada pozo salen de las fichas (estado declarado, operadora, barrio)
   const fichas = await Promise.all(h.pozos.map((p) => cargarFicha(p).catch(() => null)));
   if (este !== pedido) return; // mientras cargaba, se abrió otra
+  const barrios = [...new Set(fichas.map((f) => f?.b).filter(Boolean))];
+  const meta = [h.fecha, barrios.length ? `Barrio ${barrios.join(' y ')}` : ''].filter(Boolean).join(' · ');
+  const n = HISTORIAS.length;
+  const anterior = HISTORIAS[(i - 1 + n) % n], siguiente = HISTORIAS[(i + 1) % n];
+  const [primero, ...resto] = h.texto;
+  const pozosTexto = `${h.pozos.length} ${h.pozos.length > 1 ? 'pozos' : 'pozo'}`;
   el.innerHTML = `
-    <button type="button" class="cerrar" aria-label="Cerrar historia">×</button>
-    <p class="kicker">Convivir con los pozos</p>
-    <h3 class="historia-titulo" id="historia-titulo">${esc(h.titulo)}</h3>
-    ${h.fecha ? `<p class="historia-fecha">${esc(h.fecha)}</p>` : ''}
-    ${h.texto.map((p) => `<p>${esc(p)}</p>`).join('')}
-    <p class="historia-sub">${h.pozos.length > 1 ? 'Los pozos' : 'El pozo'}, según el registro</p>
-    <ul class="historia-pozos">${fichas.map((f) => (f ? itemPozo(f) : '')).join('')}</ul>
-    <p class="fuente">Estado declarado por la operadora ante la Secretaría de Energía. No describe el estado físico del pozo.${h.relacion === 'autores'
-      ? ` Las notas no nombran ${h.pozos.length > 1 ? 'los pozos' : 'el pozo'}: la relación con el registro la establecieron los autores.` : ''}</p>
-    ${h.fuentes.length ? `<p class="historia-sub">Fuentes</p><p class="fuente">${htmlFuente(h.fuentes)}.</p>` : ''}`;
+    ${h.foto ? `<img class="historia-foto" src="${import.meta.env.BASE_URL}img/historias/${esc(h.foto.nombre)}.webp" alt="${esc(h.foto.alt)}">` : ''}
+    <div class="historia-cuerpo">
+      <div class="historia-cabeza">
+        <p class="kicker">Historia ${i + 1} de ${n}</p>
+        <button type="button" class="cerrar" aria-label="Cerrar historia">×</button>
+      </div>
+      <h3 class="historia-titulo" id="historia-titulo">${esc(h.titulo)}</h3>
+      ${meta ? `<p class="historia-meta">${esc(meta)}</p>` : ''}
+      <p class="historia-lead">${esc(primero || '')}</p>
+      <div class="historia-mas" id="historia-mas"${desplegada ? '' : ' hidden'}>
+        ${resto.map((p) => `<p>${esc(p)}</p>`).join('')}
+        <p class="historia-sub">${h.pozos.length > 1 ? 'Los pozos' : 'El pozo'}, según el registro</p>
+        <ul class="historia-pozos">${fichas.map((f) => (f ? itemPozo(f) : '')).join('')}</ul>
+        <p class="historia-nota">Estado declarado por la operadora ante la Secretaría de Energía; no describe el estado físico del pozo.${h.relacion === 'autores'
+          ? ` Las notas no nombran ${h.pozos.length > 1 ? 'los pozos' : 'el pozo'}: la relación con el registro la establecieron los autores.` : ''}</p>
+        ${h.fuentes.length ? `<p class="historia-sub">Fuentes</p><p class="historia-fuentes">${htmlFuente(h.fuentes)}</p>` : ''}
+      </div>
+      <button type="button" class="historia-leer" aria-expanded="${desplegada}" aria-controls="historia-mas">${desplegada ? 'Ver menos' : `Seguir leyendo · ${pozosTexto} · fuentes`}</button>
+      <div class="historia-nav">
+        <button type="button" class="historia-flecha" data-ir="${anterior.id}" aria-label="Historia anterior: ${esc(anterior.titulo)}">${flecha(-1)}</button>
+        ${h.foto ? `<p class="historia-credito">Foto: ${htmlFuente([{ t: h.foto.credito, url: h.foto.url }])}</p>` : '<span></span>'}
+        <button type="button" class="historia-flecha" data-ir="${siguiente.id}" aria-label="Historia siguiente: ${esc(siguiente.titulo)}">${flecha(1)}</button>
+      </div>
+    </div>`;
   el.classList.remove('hidden');
+  el.scrollTop = 0;
   el.querySelector('.cerrar').addEventListener('click', () => cerrarHistoria());
+  const leer = el.querySelector('.historia-leer'), mas = el.querySelector('.historia-mas');
+  leer.addEventListener('click', () => {
+    const abrir = mas.hidden;
+    mas.hidden = !abrir;
+    leer.setAttribute('aria-expanded', String(abrir));
+    leer.textContent = abrir ? 'Ver menos' : `Seguir leyendo · ${pozosTexto} · fuentes`;
+  });
+  // las flechas mantienen desplegado o plegado lo que el usuario eligió
+  el.querySelectorAll('.historia-flecha').forEach((b) => b.addEventListener('click', () => abrirHistoria(b.dataset.ir, { desplegada: !mas.hidden })));
   el.querySelector('.cerrar').focus({ preventScroll: true });
+}
+
+// La historia abierta se marca en la lista de la tarjeta y en su marcador del mapa.
+function marcarActiva(id) {
+  document.querySelectorAll('.historia-btn, .marcador-historia').forEach((b) => {
+    const activa = b.dataset.historia === id;
+    b.classList.toggle('activa', activa);
+    if (b.classList.contains('historia-btn')) b.setAttribute('aria-current', activa ? 'true' : 'false');
+  });
 }
 
 function itemPozo(f) {
   const e = ESTADOS.find((x) => x.nombre === f.g);
   const operadora = f.e ? esc(f.e) : '<em>sin empresa asignada</em>';
   const antes = f.ea && f.ea !== f.e ? ` (antes, ${esc(f.ea)})` : '';
-  const lugar = f.b ? ` · barrio ${esc(f.b)}` : '';
-  return `<li><span class="ley-dot" style="background:${e?.hex}" aria-hidden="true"></span><span><b>${esc(f.s)}</b> · ${esc(f.est)} · ${operadora}${antes}${lugar}</span></li>`;
+  return `<li><span class="ley-dot" style="background:${e?.hex}" aria-hidden="true"></span><span><b>${esc(f.s)}</b><span class="historia-estado">${esc(f.est)}</span><br><span class="historia-op">${operadora}${antes}${f.b ? ` · barrio ${esc(f.b)}` : ''}</span></span></li>`;
 }
 
 /** Cierra la ventana. Con volver: true (el botón o Escape) el mapa vuelve a mostrar todas las historias. */
@@ -159,6 +208,7 @@ export function cerrarHistoria({ volver = true } = {}) {
   if (!abierta) return;
   pedido++;
   abierta = null;
+  marcarActiva(null);
   const el = document.getElementById('historia');
   el.classList.add('hidden');
   el.innerHTML = '';
